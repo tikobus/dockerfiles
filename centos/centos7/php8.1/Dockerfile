@@ -19,7 +19,7 @@ RUN export VERSION=6.9.4 \
   && make \
   && make install
 
-RUN export VERSION=8.1.0 \
+RUN export VERSION=8.1.7 \
   && export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
   && curl -O https://www.php.net/distributions/php-${VERSION}.tar.gz \
   && tar -zxf php-${VERSION}.tar.gz \
