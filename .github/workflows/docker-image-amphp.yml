@@ -18,4 +18,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the AmPHP Docker image
-        run: docker build . --file centos/centos7/amphp/Dockerfile --tag ghcr.io/tikobus/amphp:2.6 && docker push ghcr.io/tikobus/amphp:2.6
+        run: cd centos/centos7/amphp && docker build . --file Dockerfile --tag ghcr.io/tikobus/amphp:2.6 && docker push ghcr.io/tikobus/amphp:2.6
