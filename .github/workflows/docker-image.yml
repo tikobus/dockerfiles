@@ -1,0 +1,12 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-php81:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the PHP8.1 Docker image
+      run: docker build . --file centos/centos7/php8.1/Dockerfile --tag tikobus:php8.1
