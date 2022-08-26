@@ -19,3 +19,19 @@ jobs:
   
       - name: Build the PHP8.1 Docker image
         run: docker build . --file centos/centos7/php8.1/Dockerfile --tag ghcr.io/tikobus/php:8.1 && docker push ghcr.io/tikobus/php:8.1
+ 
+  build-amphp2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.0.0
+        with:
+         registry: ghcr.io
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Build the AmPHP Docker image
+        run: docker build . --file centos/centos7/amphp/Dockerfile --tag ghcr.io/tikobus/amphp:2.6 && docker push ghcr.io/tikobus/amphp:2.6
