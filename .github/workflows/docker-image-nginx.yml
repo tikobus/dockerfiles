@@ -2,9 +2,6 @@ name: Build Nginx Docker Image
 
 on:
   workflow_dispatch:
-  
-env:
-  version: 1.22.0
 
 jobs:
   build-nginx:
@@ -21,5 +18,7 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Nginx Docker image
+        env: 
+          version: "1.22.0"
         run: docker build . --file centos/centos7/nginx/Dockerfile --tag ghcr.io/${{ github.actor }}/nginx:${{ version }} && docker push ghcr.io/${{ github.actor }}/nginx:${{ version }}
     
