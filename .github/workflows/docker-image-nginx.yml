@@ -18,7 +18,5 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Nginx Docker image
-        env: 
-          version: "1.22.0"
-        run: docker build . --file centos/centos7/nginx/Dockerfile --tag ghcr.io/${{ github.actor }}/nginx:${{ version }} && docker push ghcr.io/${{ github.actor }}/nginx:${{ version }}
+        run: docker build . --file centos/centos7/nginx/Dockerfile --tag ghcr.io/${{ github.actor }}/nginx:1.22.0 && docker push ghcr.io/${{ github.actor }}/nginx:1.22.0
     
