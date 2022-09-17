@@ -1,6 +1,6 @@
 FROM centos:centos7.9.2009 AS build
 WORKDIR /usr/local
-RUN yum install -y gcc gcc-c++ make perl autoconf automake libtool openssl-devel curl-devel libevent-devel libxml2-devel libjpeg-devel libpng-devel readline-devel freetype-devel zlib-devel libicu-devel sqlite-devel
+RUN yum install -y gcc gcc-c++ make perl autoconf automake libtool openssl-devel curl-devel libevent-devel libxml2-devel libjpeg-devel librdkafka-devel libpng-devel readline-devel freetype-devel zlib-devel libicu-devel sqlite-devel centos-release-scl
 
 RUN export VERSION=1.3.2 \
   && curl -O https://libzip.org/download/libzip-${VERSION}.tar.gz \
@@ -46,6 +46,39 @@ RUN export VERSION=3.0.8 \
   && curl -O https://pecl.php.net/get/event-${VERSION}.tgz \
   && tar zxf event-${VERSION}.tgz \
   && cd event-${VERSION} \
+  && /usr/local/php/bin/phpize \
+  && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
+
+RUN export VERSION=5.1.21 \
+  && curl -O https://pecl.php.net/get/apcu-${VERSION}.tgz \
+  && tar zxf apcu-${VERSION}.tgz \
+  && cd apcu-${VERSION} \
+  && /usr/local/php/bin/phpize \
+  && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
+
+RUN export VERSION=3.18.3 \
+  && curl -O https://pecl.php.net/get/protobuf-${VERSION}.tgz \
+  && tar zxf protobuf-${VERSION}.tgz \
+  && cd protobuf-${VERSION} \
+  && /usr/local/php/bin/phpize \
+  && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
+
+RUN yum install -y librdkafka-devel
+
+RUN export VERSION=6.0.3 \
+  && curl -O https://pecl.php.net/get/rdkafka-${VERSION}.tgz \
+  && tar zxf rdkafka-${VERSION}.tgz \
+  && cd rdkafka-${VERSION} \
+  && /usr/local/php/bin/phpize \
+  && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
+
+RUN yum install -y devtoolset-8-gcc*
+
+RUN export VERSION=1.48.1 \
+  && scl enable devtoolset-8 bash && source scl_source enable devtoolset-8 \
+  && curl -O https://pecl.php.net/get/grpc-${VERSION}.tgz \
+  && tar zxf grpc-${VERSION}.tgz \
+  && cd grpc-${VERSION} \
   && /usr/local/php/bin/phpize \
   && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
 
