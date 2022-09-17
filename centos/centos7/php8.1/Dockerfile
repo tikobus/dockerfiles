@@ -36,7 +36,7 @@ RUN export VERSION=5.3.7 \
   && curl -O https://pecl.php.net/get/redis-${VERSION}.tgz \
   && tar zxf redis-${VERSION}.tgz \
   && cd redis-${VERSION} \
-  && /usr/local/php/bin/phpize \
+  && /usr/local/php/bin/phpize --with-php-config=/usr/local/php/bin/php-config \
   && ./configure && make && make install
 
 RUN cd /usr/local/php && strip bin/php && strip bin/php-cgi && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
