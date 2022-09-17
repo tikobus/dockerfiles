@@ -19,7 +19,7 @@ RUN export VERSION=6.9.4 \
   && make \
   && make install
 
-RUN export VERSION=8.1.7 \
+RUN export VERSION=8.1.10 \
   && export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
   && curl -O https://www.php.net/distributions/php-${VERSION}.tar.gz \
   && tar -zxf php-${VERSION}.tar.gz \
@@ -31,6 +31,13 @@ RUN export VERSION=8.1.7 \
   --enable-soap --enable-sockets \
   && make -j4 \
   && make install
+
+RUN export VERSION=5.3.7 \
+  && curl -O https://pecl.php.net/get/redis-${VERSION}.tgz \
+  && tar zxf redis-${VERSION}.tgz \
+  && cd redis-${VERSION} \
+  && /usr/local/php/bin/phpize \
+  && ./configure && make && make install
 
 RUN cd /usr/local/php && strip bin/php && strip bin/php-cgi && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
 RUN cd /usr/local/php/etc && cp php-fpm.conf.default php-fpm.conf && cp php-fpm.d/www.conf.default php-fpm.d/www.conf
