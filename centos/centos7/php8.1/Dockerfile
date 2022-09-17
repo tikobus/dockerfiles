@@ -25,7 +25,7 @@ RUN export VERSION=8.1.10 \
   && tar -zxf php-${VERSION}.tar.gz \
   && cd php-${VERSION} \
   && ./configure --prefix=/usr/local/php \
-  --with-curl --with-freetype --with-gettext --with-iconv-dir --with-jpeg --with-openssl --with-pear --with-readline --with-xmlrpc --with-zip --with-zlib \
+  --with-curl --with-freetype --with-gettext --with-jpeg --with-openssl --with-pear --with-readline --with-zip --with-zlib \
   --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
   --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
   --enable-soap --enable-sockets \
