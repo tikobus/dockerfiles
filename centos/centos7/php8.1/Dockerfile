@@ -91,12 +91,16 @@ RUN sed -i 's/;pid = run/pid = run/g' /usr/local/php/etc/php-fpm.conf
 RUN echo -e "\n[Opcache] \nzend_extension = opcache.so \nopcache.enable = 1 \nopcache.enable_cli = 1 \n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Redis]\nextension = redis.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Event]\nextension = event.so\n" >> /usr/local/php/lib/php.ini
+RUN echo -e "\n[Apcu]\nextension = apcu.so\n" >> /usr/local/php/lib/php.ini
+RUN echo -e "\n[Protobuf]\nextension = protobuf.so\n" >> /usr/local/php/lib/php.ini
+RUN echo -e "\n[Rdkafka]\nextension = rdkafka.so\n" >> /usr/local/php/lib/php.ini
+RUN echo -e "\n[Grpc]\nextension = grpc.so\n" >> /usr/local/php/lib/php.ini
 RUN mkdir /usr/local-build
 RUN cp -r /usr/local/php /usr/local-build/
 RUN cp -r /usr/local/lib /usr/local-build/
 
 FROM centos:centos7.9.2009
 WORKDIR /usr/local/
-RUN yum install -y autoconf automake openssl curl libevent libxml2 libpng libjpeg readline freetype zlib libicu && yum clean all
+RUN yum install -y autoconf automake openssl curl libevent libxml2 libpng libjpeg readline freetype zlib libicu librdkafka && yum clean all
 COPY --from=build /usr/local-build /usr/local
 ENV PATH /usr/local/php/bin/:/usr/local/php/sbin/:$PATH
