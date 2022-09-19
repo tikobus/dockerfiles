@@ -5,7 +5,8 @@ RUN export VERSION=8.0.28 \
   && curl -O https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-${VERSION}-linux-glibc2.17-x86_64-minimal.tar.xz \
   && xz -d mysql-${VERSION}-linux-glibc2.17-x86_64-minimal.tar.xz \
   && tar -xf mysql-${VERSION}-linux-glibc2.17-x86_64-minimal.tar \
-  && mv mysql-${VERSION}-linux-glibc2.17-x86_64-minimal mysql
+  && mv mysql-${VERSION}-linux-glibc2.17-x86_64-minimal mysql \
+  && chown -R nobody.nobody mysql
 
 FROM centos:centos7.9.2009
 WORKDIR /
