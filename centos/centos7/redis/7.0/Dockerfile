@@ -25,4 +25,5 @@ FROM centos:centos7.9.2009
 WORKDIR /
 COPY --from=build /usr/local/redis /usr/local/redis
 ENV PATH /usr/local/redis/bin:$PATH
+EXPOSE 6379
 CMD ["redis-server", "/usr/local/redis/conf/redis.conf"]
