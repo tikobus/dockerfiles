@@ -19,6 +19,7 @@ RUN cd redis-${redis_version} \
   && make install PREFIX=/usr/local/redis
 
 RUN mkdir -p /usr/local/redis/conf \
+  && sed -i 's/bind 127.0.0.1 -::1/bind * -::*/' redis-${redis_version}/redis.conf \
   && cp redis-${redis_version}/redis.conf /usr/local/redis/conf/
 
 FROM centos:centos7.9.2009
