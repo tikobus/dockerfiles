@@ -25,4 +25,5 @@ WORKDIR /
 RUN yum install -y zlib openssl pcre && yum clean all
 COPY --from=build /usr/local/nginx /usr/local/nginx
 ENV PATH /usr/local/nginx/sbin/:$PATH
+EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]
