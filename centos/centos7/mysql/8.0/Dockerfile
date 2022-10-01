@@ -13,3 +13,4 @@ WORKDIR /
 RUN yum install -y libaio numactl && yum clean all
 COPY --from=build /usr/local/mysql /usr/local/mysql
 ENV PATH /usr/local/mysql/bin/:$PATH
+EXPOSE 3306 33060
