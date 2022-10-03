@@ -11,7 +11,7 @@ RUN wget https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz \
 RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
   && cd php-* \
   && ./configure --prefix=/usr/local/php \
-  --with-curl --with-freetype --with-gettext --with-iconv-dir --with-jpeg --with-openssl --with-pear --with-readline --with-xmlrpc --with-zip --with-zlib \
+  --with-curl --with-freetype --with-gettext --with-jpeg --with-openssl --with-pear --with-readline --with-zip --with-zlib \
   --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
   --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
   --enable-soap --enable-sockets
