@@ -16,7 +16,7 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
   --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
   --enable-soap --enable-sockets
 
-RUN cd php-* && make
+RUN cd php-* && make -j4
 
 RUN cd php-* && make install
 
