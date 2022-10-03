@@ -18,5 +18,5 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Nginx Docker image
-        run: docker buildx build --push --platform linux/arm64,linux/arm/v7,linux/amd64 --file centos/centos7/nginx/Dockerfile --tag ghcr.io/${{ github.actor }}/nginx:1.22 . && docker push ghcr.io/${{ github.actor }}/nginx:1.22
+        run: docker buildx create --name mybuilder --driver docker-container && docker buildx build --push --platform linux/arm64,linux/arm/v7,linux/amd64 --file centos/centos7/nginx/Dockerfile --tag ghcr.io/${{ github.actor }}/nginx:1.22 . && docker push ghcr.io/${{ github.actor }}/nginx:1.22
     
