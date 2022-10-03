@@ -20,5 +20,5 @@ jobs:
       - name: Build the Redis Docker image
         run: docker build --file centos/centos7/redis/7.0/Dockerfile --tag ghcr.io/${{ github.actor }}/redis:7.0 .
     
-      - name: Build the Nginx Docker image
+      - name: Push the Redis Docker image
         run: docker push ghcr.io/${{ github.actor }}/redis:7.0
