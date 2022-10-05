@@ -17,7 +17,7 @@ RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
 
 FROM alpine:3.16.2
 WORKDIR /
-RUN apk add pcre openssl zlib
+RUN apk add --no-cache pcre openssl zlib
 COPY --from=build /usr/local/nginx /usr/local/nginx
 ENV PATH /usr/local/nginx/sbin/:$PATH
 EXPOSE 80 443
