@@ -14,7 +14,8 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
   --with-curl --with-freetype --with-gettext --with-jpeg --with-openssl --with-pear --with-readline --with-zip --with-zlib \
   --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
   --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
-  --enable-soap --enable-sockets
+  --enable-soap --enable-sockets \
+  --disable-cgi 
 
 RUN cd php-* && make -j4
 
@@ -56,6 +57,7 @@ RUN export VERSION=6.0.3 \
   && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
 
 RUN cd /usr/local/php && strip bin/php && strip bin/php-cgi && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
+RUN strip /usr/local/php/lib/php/extensions/no-debug-non-zts-20210902/*.so
 RUN cd /usr/local/php/etc && cp php-fpm.conf.default php-fpm.conf && cp php-fpm.d/www.conf.default php-fpm.d/www.conf
 RUN cp php-*/php.ini-production /usr/local/php/lib/php.ini
 RUN sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/lib/php.ini
@@ -68,6 +70,7 @@ RUN echo -e "\n[Apcu]\nextension = apcu.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Protobuf]\nextension = protobuf.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Rdkafka]\nextension = rdkafka.so\n" >> /usr/local/php/lib/php.ini
 RUN mkdir /usr/local-build
+RUN rm -f /usr/local/php/bin/phpdbg
 RUN cp -r /usr/local/php /usr/local-build/
 RUN cp -r /usr/local/lib /usr/local-build/
 
