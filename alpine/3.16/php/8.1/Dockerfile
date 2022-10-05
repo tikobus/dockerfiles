@@ -72,6 +72,6 @@ RUN cp -r /usr/local/php /usr/local-build/
 RUN cp -r /usr/local/lib /usr/local-build/
 
 FROM alpine:3.16.2
-RUN apk add autoconf automake openssl curl libevent libxml2 libpng libjpeg readline freetype zlib librdkafka libzip oniguruma sqlite-libs icu
+RUN apk add --no-cache autoconf automake openssl curl libevent libxml2 libpng libjpeg readline freetype zlib librdkafka libzip oniguruma sqlite-libs icu
 COPY --from=build /usr/local-build /usr/local
 ENV PATH /usr/local/php/bin/:/usr/local/php/sbin/:$PATH
