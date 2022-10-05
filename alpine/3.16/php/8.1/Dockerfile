@@ -56,7 +56,7 @@ RUN export VERSION=6.0.3 \
   && /usr/local/php/bin/phpize \
   && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
 
-RUN cd /usr/local/php && strip bin/php && strip bin/php-cgi && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
+RUN cd /usr/local/php && strip bin/php && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
 RUN strip /usr/local/php/lib/php/extensions/no-debug-non-zts-20210902/*.so
 RUN cd /usr/local/php/etc && cp php-fpm.conf.default php-fpm.conf && cp php-fpm.d/www.conf.default php-fpm.d/www.conf
 RUN cp php-*/php.ini-production /usr/local/php/lib/php.ini
