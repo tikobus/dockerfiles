@@ -8,4 +8,4 @@ RUN go env -w GOPROXY=https://goproxy.cn,direct && cd beats-${FILEBEAT_VERSION}/
 FROM alpine:3.16.2
 WORKDIR /
 COPY --from=build /filebeat /usr/local/bin/filebeat
-CMD ["filebeat" "-e"]
+CMD ["filebeat", "-e"]
