@@ -24,7 +24,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build the Redis Docker image
-        run: docker buildx build --platform=linux/arm64 --file centos/centos7/redis/7.0/Dockerfile --tag ghcr.io/${{ github.actor }}/redis:7.0-arm64 .
+        run: docker buildx build --platform=linux/arm64 --file centos/centos7/redis/7.0/Dockerfile --tag ghcr.io/${{ github.actor }}/redis:7.0-arm64 . --load
 
       - name: Push the Redis Docker image
         run: docker push ghcr.io/${{ github.actor }}/redis:7.0-arm64
