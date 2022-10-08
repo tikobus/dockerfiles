@@ -18,7 +18,7 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Filebeat Docker image
-        run: docker build --platform=linux/arm64 --file alpine/3.16/filebeat/8.4/Dockerfile --tag ghcr.io/${{ github.actor }}/filebeat:8.4-alpine-arm64 . 
+        run: docker build --file alpine/3.16/filebeat/8.4/Dockerfile --tag ghcr.io/${{ github.actor }}/filebeat:8.4-alpine . 
     
       - name: Push the Filebeat Docker image
-        run: docker push ghcr.io/${{ github.actor }}/filebeat:8.4-alpine-arm64
+        run: docker push ghcr.io/${{ github.actor }}/filebeat:8.4-alpine
