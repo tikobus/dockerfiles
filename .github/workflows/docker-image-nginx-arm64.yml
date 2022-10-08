@@ -24,7 +24,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
         
       - name: Build the Nginx Docker image Arm64
-        run: docker buildx build --platform=linux/arm64 --file centos/centos7/nginx/Dockerfile --tag ghcr.io/${{ github.actor }}/nginx:1.22-arm64 .
+        run: docker buildx build --platform=linux/arm64 --file centos/centos7/nginx/Dockerfile --tag ghcr.io/${{ github.actor }}/nginx:1.22-arm64 . --load
 
       - name: Push the Nginx Docker image Arm64
         run: docker push ghcr.io/${{ github.actor }}/nginx:1.22-arm64
