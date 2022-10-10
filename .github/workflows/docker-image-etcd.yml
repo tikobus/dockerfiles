@@ -1,4 +1,4 @@
-name: Build Etcd Docker Image
+name: Docker Etcd CentOS Amd64
 
 on:
   workflow_dispatch:
