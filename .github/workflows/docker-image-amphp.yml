@@ -1,4 +1,4 @@
-name: Build AmPHP Docker Image
+name: Docker AmPHP CentOS Amd64
 
 on:
   workflow_dispatch:
