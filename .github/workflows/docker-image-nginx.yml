@@ -1,4 +1,4 @@
-name: Build Nginx Docker Image
+name: Docker Nginx CentOS Amd64
 
 on:
   workflow_dispatch:
