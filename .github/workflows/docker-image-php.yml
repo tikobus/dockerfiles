@@ -1,4 +1,4 @@
-name: Build PHP Docker Image
+name: Docker PHP CentOS Amd64
 
 on:
   workflow_dispatch:
