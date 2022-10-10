@@ -1,4 +1,4 @@
-name: Build Filebeat Docker Image
+name: Docker Filebeat Alpine Amd64
 
 on:
   workflow_dispatch:
