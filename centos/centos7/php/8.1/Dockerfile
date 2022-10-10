@@ -88,6 +88,7 @@ RUN cp /usr/local/php-*/php.ini-production /usr/local/php/lib/php.ini
 RUN sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/lib/php.ini
 RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/php/lib/php.ini
 RUN sed -i 's/;pid = run/pid = run/g' /usr/local/php/etc/php-fpm.conf
+RUN sed -i "s/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/" /usr/local/php/etc/php-fpm.d/www.conf
 RUN echo -e "\n[Opcache] \nzend_extension = opcache.so \nopcache.enable = 1 \nopcache.enable_cli = 1 \n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Redis]\nextension = redis.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Event]\nextension = event.so\n" >> /usr/local/php/lib/php.ini
