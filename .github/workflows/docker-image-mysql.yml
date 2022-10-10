@@ -1,4 +1,4 @@
-name: Build Mysql Docker Image
+name: Docker Mysql CentOS Amd64
 
 on:
   workflow_dispatch:
