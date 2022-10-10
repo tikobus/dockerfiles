@@ -1,6 +1,8 @@
 FROM centos:centos7.9.2009 AS build
 WORKDIR /usr/local
 RUN yum install -y gcc gcc-c++ make perl autoconf automake libtool openssl-devel curl-devel libevent-devel libxml2-devel libjpeg-devel librdkafka-devel libpng-devel readline-devel freetype-devel zlib-devel libicu-devel sqlite-devel centos-release-scl
+RUN yum install -y devtoolset-8-gcc*
+RUN scl enable devtoolset-8 bash && source scl_source enable devtoolset-8
 
 RUN export VERSION=1.3.2 \
   && curl -O https://libzip.org/download/libzip-${VERSION}.tar.gz \
@@ -31,7 +33,7 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
   --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
   --enable-soap --enable-sockets
 
-RUN cd php-* && make
+RUN cd php-* && make -j4
 
 RUN cd php-* && make install
 
@@ -63,8 +65,6 @@ RUN export VERSION=3.18.3 \
   && /usr/local/php/bin/phpize \
   && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
 
-RUN yum install -y librdkafka-devel
-
 RUN export VERSION=6.0.3 \
   && curl -O https://pecl.php.net/get/rdkafka-${VERSION}.tgz \
   && tar zxf rdkafka-${VERSION}.tgz \
@@ -72,10 +72,7 @@ RUN export VERSION=6.0.3 \
   && /usr/local/php/bin/phpize \
   && ./configure --with-php-config=/usr/local/php/bin/php-config && make && make install
 
-RUN yum install -y devtoolset-8-gcc*
-
 RUN export VERSION=1.48.1 \
-  && scl enable devtoolset-8 bash && source scl_source enable devtoolset-8 \
   && curl -O https://pecl.php.net/get/grpc-${VERSION}.tgz \
   && tar zxf grpc-${VERSION}.tgz \
   && cd grpc-${VERSION} \
