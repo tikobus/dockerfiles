@@ -57,7 +57,7 @@ RUN export VERSION=6.0.3 \
   && ./configure --with-php-config=/usr/local/php/bin/php-config && make -j4 && make install
 
 RUN export VERSION=1.48.1 \
-  && curl -O https://pecl.php.net/get/grpc-${VERSION}.tgz \
+  && wget https://pecl.php.net/get/grpc-${VERSION}.tgz \
   && tar zxf grpc-${VERSION}.tgz \
   && cd grpc-${VERSION} \
   && /usr/local/php/bin/phpize \
@@ -78,12 +78,10 @@ RUN echo -e "\n[Apcu]\nextension = apcu.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Protobuf]\nextension = protobuf.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Rdkafka]\nextension = rdkafka.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Grpc]\nextension = grpc.so\n" >> /usr/local/php/lib/php.ini
-RUN mkdir /usr/local-build
 RUN rm -f /usr/local/php/bin/phpdbg
-RUN cp -r /usr/local/php /usr/local-build/
-RUN cp -r /usr/local/lib /usr/local-build/
 
 FROM alpine:3.16.2
 RUN apk add --no-cache autoconf automake openssl curl libevent libxml2 libpng libjpeg readline freetype zlib librdkafka libzip oniguruma sqlite-libs icu
-COPY --from=build /usr/local-build /usr/local
+COPY --from=build /usr/local/php /usr/local/php
 ENV PATH /usr/local/php/bin/:/usr/local/php/sbin/:$PATH
+CMD [ "php-fpm", "-F" ]
