@@ -1,6 +1,6 @@
 FROM alpine:3.16.2 AS build
 ENV ETCD_VERSION 3.5.5
-RUN apk add --no-cache go bash
+RUN apk add --no-cache go bash git
 
 RUN wget https://github.com/etcd-io/etcd/archive/refs/tags/v${ETCD_VERSION}.zip 
 RUN unzip v${ETCD_VERSION}.zip
