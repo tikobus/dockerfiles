@@ -1,6 +1,6 @@
 FROM centos:centos7.9.2009 AS build
 WORKDIR /usr/local
-RUN yum install -y gcc gcc-c++ make perl autoconf automake libtool openssl-devel curl-devel libevent-devel libxml2-devel libjpeg-devel librdkafka-devel libpng-devel readline-devel freetype-devel zlib-devel libicu-devel sqlite-devel centos-release-scl
+RUN yum install -y gcc gcc-c++ make perl autoconf automake libtool openssl-devel curl-devel libevent-devel libxml2-devel libjpeg-devel librdkafka-devel libpng-devel readline-devel freetype-devel zlib-devel libicu-devel sqlite-devel centos-release-scl 
 RUN yum install -y devtoolset-8-gcc* 
 RUN scl enable devtoolset-8 bash && source scl_source enable devtoolset-8
 
@@ -28,7 +28,7 @@ RUN export VERSION=8.1.10 \
 RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
   && cd php-* \
   && ./configure --prefix=/usr/local/php \
-  --with-curl --with-freetype --with-gettext --with-iconv-dir --with-jpeg --with-openssl --with-pear --with-readline --with-xmlrpc --with-zip --with-zlib \
+  --with-curl --with-freetype --with-gettext --with-iconv-dir --with-jpeg --with-openssl --with-pear --with-readline --with-sodium --with-xmlrpc --with-zip --with-zlib \
   --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
   --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
   --enable-soap --enable-sockets
