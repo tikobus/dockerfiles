@@ -1,6 +1,6 @@
 FROM rockylinux:9.0.20220720-minimal AS build
 ENV PHP_VERSION 8.1.11
-RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel 
+RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel 
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=epel install -y libsodium-devel
 
@@ -45,8 +45,6 @@ RUN export VERSION=3.18.3 \
     && /usr/local/php/bin/phpize \
     && ./configure --with-php-config=/usr/local/php/bin/php-config && make -j4 && make install
 
-RUN microdnf --enablerepo=devel install -y librdkafka-devel
-
 RUN export VERSION=6.0.3 \
     && curl -O https://pecl.php.net/get/rdkafka-${VERSION}.tgz \
     && tar zxf rdkafka-${VERSION}.tgz \
@@ -62,6 +60,7 @@ RUN export VERSION=1.48.1 \
     && ./configure --with-php-config=/usr/local/php/bin/php-config && make -j4 && make install
 
 RUN cd /usr/local/php && strip bin/php && strip bin/php-cgi && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
+RUN strip /usr/local/php/lib/php/extensions/no-debug-non-zts-20210902/*.so
 RUN cd /usr/local/php/etc && cp php-fpm.conf.default php-fpm.conf && cp php-fpm.d/www.conf.default php-fpm.d/www.conf
 RUN cp php-${PHP_VERSION}/php.ini-production /usr/local/php/lib/php.ini
 RUN sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/lib/php.ini
@@ -77,8 +76,8 @@ RUN echo -e "\n[Rdkafka]\nextension = rdkafka.so\n" >> /usr/local/php/lib/php.in
 RUN echo -e "\n[Grpc]\nextension = grpc.so\n" >> /usr/local/php/lib/php.ini
 
 FROM rockylinux:9.0.20220720-minimal
-RUN microdnf install -y epel-release
-RUN microdnf --enablerepo=epel install -y curl freetype libevent libxml2 libpng libjpeg libicu librdkafka libsodium oniguruma openssl readline zlib && microdnf clean all
+RUN microdnf install -y epel-release && microdnf clean all
+RUN microdnf --enablerepo=epel install -y curl freetype libevent libxml2 libpng libjpeg libicu librdkafka libsodium libzip oniguruma openssl readline zlib && microdnf clean all
 COPY --from=build /usr/local/php /usr/local/php
 ENV PATH /usr/local/php/bin/:/usr/local/php/sbin/:$PATH
-CMD [ "php-fmp", "-F" ]
+CMD [ "php-fpm", "-F" ]
