@@ -1,0 +1,24 @@
+name: Docker Redis Rocky Amd64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-redis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.0.0
+        with:
+         registry: ghcr.io
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Build the Redis Docker image
+        run: docker build --file rocky/9/redis/7.0/Dockerfile --tag ghcr.io/${{ github.actor }}/redis:7.0-rocky .
+    
+      - name: Push the Redis Docker image
+        run: docker push ghcr.io/${{ github.actor }}/redis:7.0-rocky
