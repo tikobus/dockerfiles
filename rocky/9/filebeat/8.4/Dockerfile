@@ -6,6 +6,7 @@ RUN if [ `arch` == 'x86_64' ] ; then wget https://artifacts.elastic.co/downloads
 RUN mkdir /usr/local/filebeat && tar zxf filebeat-*.tar.gz && mv filebeat-*/* /usr/local/filebeat/
 
 FROM rockylinux:9.0.20220720-minimal
+WORKDIR /usr/local/filebeat
 COPY --from=build /usr/local/filebeat /usr/local/filebeat
 ENV PATH /usr/local/filebeat/:$PATH
 CMD ["filebeat", "-e"]
