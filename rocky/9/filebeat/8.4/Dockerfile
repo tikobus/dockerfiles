@@ -5,7 +5,7 @@ RUN if [ `arch` == 'aarch64' ]; then wget https://artifacts.elastic.co/downloads
 RUN if [ `arch` == 'x86_64' ] ; then wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-${FILEBEAT_VERSION}-linux-x86_64.tar.gz; fi
 RUN mkdir /usr/local/filebeat && tar zxf filebeat-*.tar.gz && mv filebeat-*/* /usr/local/filebeat/
 
-FROM alpine:3.16.2
+FROM rockylinux:9.0.20220720-minimal
 COPY --from=build /usr/local/filebeat /usr/local/filebeat
 ENV PATH /usr/local/filebeat/:$PATH
 CMD ["filebeat", "-e"]
