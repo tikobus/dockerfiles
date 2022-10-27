@@ -2,7 +2,7 @@ FROM centos:centos7.9.2009 AS build
 ENV NGINX_VERSION 1.22.1
 ENV NJS_VERSION 0.7.8
 ENV OPENSSL_VERSION 1.1.1o
-RUN yum install -y gcc make zlib-devel openssl-devel pcre-devel perl-devel
+RUN yum install -y gcc gcc-c++ make which zlib-devel openssl-devel pcre-devel perl-devel
 
 RUN curl -O https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz \
   && tar zxf openssl-${OPENSSL_VERSION}.tar.gz
