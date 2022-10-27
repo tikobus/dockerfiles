@@ -1,16 +1,19 @@
 FROM rockylinux:9.0.20220720-minimal AS build
+ENV NGINX_VERSION 1.22.1
+ENV NJS_VERSION 0.7.8
 RUN microdnf install -y gcc make tar zlib-devel openssl-devel pcre-devel perl-devel
-
-RUN export VERSION=1.22.0 \
-  && curl -O https://nginx.org/download/nginx-${VERSION}.tar.gz \
-  && tar -zxf nginx-${VERSION}.tar.gz \
-  && cd nginx-${VERSION} \
+RUN curl -O -L https://github.com/nginx/njs/archive/refs/tags/${NJS_VERSION}.tar.gz \
+  && tar zxf ${NJS_VERSION}.tar.gz
+RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
+  && tar -zxf nginx-${NGINX_VERSION}.tar.gz \
+  && cd nginx-${NGINX_VERSION} \
   && sed -i 's:CFLAGS="$CFLAGS -g":# CFLAGS="$CFLAGS -g":g' auto/cc/gcc \
   && ./configure --prefix=/usr/local/nginx \
   --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-http_sub_module \
   --with-stream --with-stream_ssl_module --with-http_v2_module \
   --with-http_mp4_module --with-http_secure_link_module --with-http_auth_request_module \
   --with-threads --with-file-aio \
+  --add-module=../njs-${NJS_VERSION}/nginx \
   && make -j4 \
   && make install
 
