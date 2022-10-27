@@ -20,7 +20,7 @@ RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
   --with-stream --with-stream_ssl_module --with-http_v2_module \
   --with-http_mp4_module --with-http_secure_link_module --with-http_auth_request_module \
   --with-threads --with-file-aio \
-  --add-module=../njs-${NJS_VERSION} \
+  --add-module=../njs-${NJS_VERSION}/nginx \
   && make -j4 \
   && make install
 
