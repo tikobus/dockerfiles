@@ -60,7 +60,7 @@ RUN export VERSION=1.48.1 \
     && ./configure --with-php-config=/usr/local/php/bin/php-config && make -j4 && make install
 
 RUN cd /usr/local/php && strip bin/php && strip bin/php-cgi && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
-RUN strip /usr/local/php/lib/php/extensions/no-debug-non-zts-20210902/*.so
+RUN strip /usr/local/php/lib/php/extensions/no-debug-non-zts-*/*.so
 RUN cd /usr/local/php/etc && cp php-fpm.conf.default php-fpm.conf && cp php-fpm.d/www.conf.default php-fpm.d/www.conf
 RUN cp php-${PHP_VERSION}/php.ini-production /usr/local/php/lib/php.ini
 RUN sed -i 's/;date.timezone =/date.timezone = PRC/g' /usr/local/php/lib/php.ini
