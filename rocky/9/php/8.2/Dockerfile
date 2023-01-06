@@ -1,5 +1,5 @@
 FROM rockylinux:9.0.20220720-minimal AS build
-ENV PHP_VERSION 8.2.0
+ENV PHP_VERSION 8.2.1
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel 
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=epel install -y libsodium-devel
