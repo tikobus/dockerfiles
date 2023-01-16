@@ -6,5 +6,5 @@ RUN unzip v${WOL_VERSION}.zip
 RUN cd wol-${WOL_VERSION} && go build .
 
 FROM alpine:3.16.2
-COPY --from=build /wol /usr/local/bin/
+COPY --from=build /wol-0.2.1/wol /usr/local/bin/
 CMD ["wol"]
