@@ -1,5 +1,5 @@
 FROM rockylinux:9.0.20220720-minimal AS build
-ENV PHP_VERSION 8.2.1
+ENV PHP_VERSION 8.2.2
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel 
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=epel install -y libsodium-devel
@@ -75,9 +75,17 @@ RUN echo -e "\n[Protobuf]\nextension = protobuf.so\n" >> /usr/local/php/lib/php.
 RUN echo -e "\n[Rdkafka]\nextension = rdkafka.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Grpc]\nextension = grpc.so\n" >> /usr/local/php/lib/php.ini
 
+# Install Composer
+RUN /usr/local/php/bin/php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+  && /usr/local/php/bin/php -r "if (hash_file('SHA384', 'composer-setup.php') === rtrim(file_get_contents('https://composer.github.io/installer.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+  && /usr/local/php/bin/php composer-setup.php \
+  && /usr/local/php/bin/php -r "unlink('composer-setup.php');" \
+  && mv composer.phar /composer
+
 FROM rockylinux:9.0.20220720-minimal
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype libevent libxml2 libpng libjpeg libicu librdkafka libsodium libzip oniguruma openssl readline zlib && microdnf clean all
 COPY --from=build /usr/local/php /usr/local/php
+COPY --from=build /composer /usr/local/bin/composer
 ENV PATH /usr/local/php/bin/:/usr/local/php/sbin/:$PATH
 CMD [ "php-fpm", "-F" ]
