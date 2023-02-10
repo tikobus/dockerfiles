@@ -1,4 +1,4 @@
-name: Docker PHP Rocky Amd64
+name: Docker PHP 8.1 Rocky Amd64
 
 on:
   workflow_dispatch:
