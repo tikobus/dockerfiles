@@ -1,0 +1,21 @@
+name: Docker PHP 8.2 Amazon Amd64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-php82:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.0.0
+        with:
+         registry: ghcr.io
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the PHP 8.2 Docker image
+        run: docker build . --file amazon/2.0/php/8.2/Dockerfile --tag ghcr.io/tikobus/php:8.2-amazon && docker push ghcr.io/tikobus/php:8.2-amazon
