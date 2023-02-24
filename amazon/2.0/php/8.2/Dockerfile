@@ -1,7 +1,7 @@
 FROM amazonlinux:2.0.20230207.0 AS build
 ENV PHP_VERSION 8.2.3
 RUN yum install -y autoconf automake gcc gcc-c++ make tar gzip gunzip
-RUN yum install -y curl-devel libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel libzip2-devel libsodium-devel freetype-devel
+RUN yum install -y curl-devel libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel bzip2-devel libsodium-devel freetype-devel
 RUN yum install -y libevent-devel oniguruma-devel openssl-devel readline-devel sqlite-devel zlib-devel 
 RUN curl -O https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz 
 RUN tar zxf php-${PHP_VERSION}.tar.gz
