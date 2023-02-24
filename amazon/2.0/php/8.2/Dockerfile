@@ -4,7 +4,7 @@ RUN yum install -y autoconf automake gcc gcc-c++ make tar
 RUN yum install -y curl-devel libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip2-devel libsodium-devel freetype-devel
 RUN yum install -y libevent-devel oniguruma-devel openssl-devel readline-devel sqlite-devel zlib-devel 
 RUN curl -O https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz 
-RUN tar zxf php-${PHP_VERSION}.tar.gz
+RUN tar zxf php-*.tar.gz
 RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
     && cd php-${PHP_VERSION} \
     && ./configure --prefix=/usr/local/php \
