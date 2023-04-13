@@ -1,7 +1,7 @@
 FROM rockylinux:9.0.20220720-minimal AS build
 ENV NGINX_VERSION 1.24.0
 ENV NJS_VERSION 0.7.12
-RUN microdnf install -y autoconf automake gcc gcc-c++ make tar which zlib-devel openssl-devel pcre-devel perl-devel
+RUN microdnf install -y autoconf automake gcc gcc-c++ make tar which zlib-devel openssl-devel pcre-devel perl-devel libxml2-devel libxslt-devel
 RUN curl -O -L https://github.com/nginx/njs/archive/refs/tags/${NJS_VERSION}.tar.gz \
   && tar zxf ${NJS_VERSION}.tar.gz
 RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
