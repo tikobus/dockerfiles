@@ -1,7 +1,7 @@
 FROM rockylinux:9.0.20220720 AS build
 ENV SEATUNNEL_VERSION 2.3.2
 RUN dnf install -y java-1.8.0-openjdk
-RUN curl -O -L https://www.apache.org/dyn/closer.lua/seatunnel/${SEATUNNEL_VERSION}/apache-seatunnel-${SEATUNNEL_VERSION}-bin.tar.gz
+RUN curl -O -L https://dlcdn.apache.org/seatunnel/${SEATUNNEL_VERSION}/apache-seatunnel-${SEATUNNEL_VERSION}-bin.tar.gz
 RUN tar zxf apache-seatunnel-${SEATUNNEL_VERSION}-bin.tar.gz
 RUN copy -r apache-seatunnel-${SEATUNNEL_VERSION}-bin /usr/local/seatunnel
 RUN cd /usr/local/seatunnel && sh install-plugin.sh ${SEATUNNEL_VERSION}
