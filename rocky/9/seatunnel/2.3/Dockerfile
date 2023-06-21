@@ -4,7 +4,7 @@ RUN dnf install -y java-1.8.0-openjdk
 RUN curl -O -L https://dlcdn.apache.org/seatunnel/${SEATUNNEL_VERSION}/apache-seatunnel-${SEATUNNEL_VERSION}-bin.tar.gz
 RUN tar zxf apache-seatunnel-${SEATUNNEL_VERSION}-bin.tar.gz
 RUN ls && cp -r apache-seatunnel-${SEATUNNEL_VERSION} /usr/local/seatunnel
-RUN cd /usr/local/seatunnel && sh install-plugin.sh ${SEATUNNEL_VERSION}
+RUN cd /usr/local/seatunnel/bin && sh install-plugin.sh ${SEATUNNEL_VERSION}
 
 FROM rockylinux:9.0.20220720-minimal
 RUN microdnf install -y java-1.8.0-openjdk
