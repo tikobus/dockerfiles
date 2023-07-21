@@ -24,4 +24,4 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build the Docker image
-        run: docker buildx build --platform=linux/arm64 . --file rocky/9/kafka/3.5/Dockerfile --tag ghcr.io/${{ github.actor }}/kafka:3.5-rocky-arm64 && docker push ghcr.io/${{ github.actor }}/kafka:3.5-rocky-arm64
+        run: docker buildx build --platform=linux/arm64 --file rocky/9/kafka/3.5/Dockerfile --tag ghcr.io/${{ github.actor }}/kafka:3.5-rocky-arm64 && docker push ghcr.io/${{ github.actor }}/kafka:3.5-rocky-arm64 . --load 
