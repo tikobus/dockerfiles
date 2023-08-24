@@ -7,6 +7,6 @@ RUN cd /app/stable-diffusion-webui && git checkout v${VERSION}
 RUN cd /app/stable-diffusion-webui && pip3 install -r requirements.txt
 
 FROM rockylinux:9.2.20230513-minimal
-RUN microdnf install -y python3
+RUN microdnf install -y python3 git
 COPY --from=build /app /app
 CMD ["/app/stable-diffusion-webui/webui.sh"]
