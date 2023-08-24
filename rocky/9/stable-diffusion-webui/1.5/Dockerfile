@@ -8,5 +8,6 @@ RUN cd /app/stable-diffusion-webui && python3 -m venv venv && source venv/bin/ac
 
 FROM rockylinux:9.2.20230513-minimal
 RUN microdnf install -y python3 git
+USER nobody
 COPY --from=build /app /app
-CMD ["/app/stable-diffusion-webui/webui.sh"]
+CMD ["/app/stable-diffusion-webui/webui.sh", "--skip-torch-cuda-test"]
