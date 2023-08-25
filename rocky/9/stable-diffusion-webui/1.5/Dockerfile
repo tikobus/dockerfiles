@@ -12,4 +12,5 @@ FROM rockylinux:9.2.20230513-minimal
 WORKDIR /app/stable-diffusion-webui
 RUN microdnf install -y python3 git
 COPY --from=build /app /app
+EXPOSE 7860
 CMD ["./webui.sh", "--skip-torch-cuda-test", "--skip-version-check"]
