@@ -9,7 +9,7 @@ RUN cd /app/stable-diffusion-webui && sed -i 's/can_run_as_root=0/can_run_as_roo
 RUN cd /app/stable-diffusion-webui && curl -o models/Stable-diffusion/v1-5-pruned-emaonly.safetensors https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors
 
 FROM rockylinux:9.2.20230513-minimal
+WORKDIR /app/stable-diffusion-webui
 RUN microdnf install -y python3 git
-USER nobody
 COPY --from=build /app /app
-CMD ["/app/stable-diffusion-webui/webui.sh", "--skip-torch-cuda-test", "--skip-version-check"]
+CMD ["./webui.sh", "--skip-torch-cuda-test", "--skip-version-check"]
