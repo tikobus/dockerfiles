@@ -1,0 +1,21 @@
+name: Docker PHP 8.3 Rocky Amd64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-php82:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.0.0
+        with:
+         registry: ghcr.io
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the PHP 8.3 Docker image
+        run: docker build . --file rocky/9/php/8.3/Dockerfile --tag ghcr.io/tikobus/php:8.3-rocky && docker push ghcr.io/tikobus/php:8.3-rocky
