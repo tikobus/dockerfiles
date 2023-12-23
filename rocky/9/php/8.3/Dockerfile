@@ -1,5 +1,5 @@
-FROM rockylinux:9.2.20230513-minimal AS build
-ENV PHP_VERSION 8.3.0
+FROM rockylinux:9.3.20231119-minimal AS build
+ENV PHP_VERSION 8.3.1
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel 
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=epel install -y libsodium-devel
@@ -82,7 +82,7 @@ RUN /usr/local/php/bin/php -r "copy('https://getcomposer.org/installer', 'compos
   && /usr/local/php/bin/php -r "unlink('composer-setup.php');" \
   && mv composer.phar /composer
 
-FROM rockylinux:9.2.20230513-minimal
+FROM rockylinux:9.3.20231119-minimal
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype libevent libxml2 libpng libjpeg libicu librdkafka libsodium libzip oniguruma openssl readline zlib && microdnf clean all
 COPY --from=build /usr/local/php /usr/local/php
