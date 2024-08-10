@@ -1,6 +1,6 @@
 FROM rockylinux:9 AS build
 ENV MYSQL_VERSION 8.4.2
-RUN dnf install -y gcc gcc-c++ make cmake bison diffutils rpcgen perl ncurses-devel openssl-devel zlib-devel libfido2 libedit-devel libevent-devel libicu-devel lz4-devel libcurl-devel perl-interpreter perl-generators libzstd-devel
+RUN dnf install -y gcc gcc-c++ make cmake bison diffutils rpcgen perl ncurses-devel openssl-devel zlib-devel libfido2 libedit-devel libevent-devel libicu-devel lz4-devel libcurl-devel perl-interpreter perl-generators libzstd-devel gcc-toolset-12-gcc gcc-toolset-12-gcc-c++ gcc-toolset-12-binutils gcc-toolset-12-annobin-annocheck gcc-toolset-12-annobin-plugin-gcc
 RUN dnf --enablerepo=devel install -y libtirpc-devel libaio-devel mecab-devel protobuf-lite-devel
 RUN curl -O -L https://github.com/mysql/mysql-server/archive/mysql-${MYSQL_VERSION}.tar.gz
 RUN tar zxf mysql-${MYSQL_VERSION}.tar.gz
