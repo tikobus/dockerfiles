@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-php82:
+  build-php:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -17,5 +17,5 @@ jobs:
          username: ${{ github.actor }}
          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build the PHP 8.3 Docker image
+      - name: Build the PHP 8 Docker image
         run: docker build . --file rocky/9/php/8.3/Dockerfile --tag ghcr.io/tikobus/php:8.3-rocky && docker push ghcr.io/tikobus/php:8.3-rocky
