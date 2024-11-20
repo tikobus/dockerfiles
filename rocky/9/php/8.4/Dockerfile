@@ -1,4 +1,4 @@
-FROM rockylinux:9.3.20231119-minimal AS build
+FROM rockylinux:9.5-minimal AS build
 ENV PHP_VERSION 8.4.0
 ENV INSTALL_PATH ${INSTALL_PATH}/8.4
 RUN microdnf install -y epel-release
@@ -82,7 +82,7 @@ RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'compo
   && ${INSTALL_PATH}/bin/php -r "unlink('composer-setup.php');" \
   && mv composer.phar /composer
 
-FROM rockylinux:9.3.20231119-minimal
+FROM rockylinux:9.5-minimal
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype libevent libxml2 libpng libjpeg libicu librdkafka libsodium libzip oniguruma openssl readline zlib && microdnf clean all
 COPY --from=build ${INSTALL_PATH} ${INSTALL_PATH}
