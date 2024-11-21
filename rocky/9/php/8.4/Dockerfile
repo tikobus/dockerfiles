@@ -1,11 +1,11 @@
 FROM rockylinux:9.5-minimal AS build
-ENV PHP_VERSION 8.4.0RC4
+ENV PHP_VERSION 8.4.1
 ENV INSTALL_PATH /usr/local/php/8.4
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel libevent-devel
 RUN microdnf --enablerepo=epel install -y libsodium-devel
 
-RUN curl -O https://downloads.php.net/~calvinb/php-8.4.0RC4.tar.gz
+RUN curl -O https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz
 RUN tar zxf php-${PHP_VERSION}.tar.gz
 RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
     && cd php-${PHP_VERSION} \
