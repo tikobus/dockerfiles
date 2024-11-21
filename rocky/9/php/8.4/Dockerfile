@@ -1,6 +1,6 @@
 FROM rockylinux:9.5-minimal AS build
 ENV PHP_VERSION 8.4.0RC4
-ENV INSTALL_PATH ${INSTALL_PATH}/8.4
+ENV INSTALL_PATH /usr/local/php/8.4
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel libevent-devel
 RUN microdnf --enablerepo=epel install -y libsodium-devel
@@ -17,7 +17,7 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
 RUN cd php-${PHP_VERSION} && make -j4
 RUN cd php-${PHP_VERSION} && make install
 
-RUN export VERSION=5.3.7 \
+RUN export VERSION=6.1.0 \
     && curl -O https://pecl.php.net/get/redis-${VERSION}.tgz \
     && tar zxf redis-${VERSION}.tgz \
     && cd redis-${VERSION} \
@@ -31,7 +31,7 @@ RUN export VERSION=3.0.8 \
     && ${INSTALL_PATH}/bin/phpize \
     && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
 
-RUN export VERSION=5.1.21 \
+RUN export VERSION=5.1.24 \
     && curl -O https://pecl.php.net/get/apcu-${VERSION}.tgz \
     && tar zxf apcu-${VERSION}.tgz \
     && cd apcu-${VERSION} \
@@ -68,7 +68,6 @@ RUN sed -i 's/expose_php = On/expose_php = Off/g' ${INSTALL_PATH}/lib/php.ini
 RUN sed -i 's/;pid = run/pid = run/g' ${INSTALL_PATH}/etc/php-fpm.conf
 RUN sed -i "s/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/" ${INSTALL_PATH}/etc/php-fpm.d/www.conf
 RUN echo -e "\n[Opcache] \nzend_extension = opcache.so \nopcache.enable = 1 \nopcache.enable_cli = 1 \n" >> ${INSTALL_PATH}/lib/php.ini
-RUN echo -e "\n[Redis]\nextension = redis.so\n" >> ${INSTALL_PATH}/lib/php.ini
 RUN echo -e "\n[Event]\nextension = event.so\n" >> ${INSTALL_PATH}/lib/php.ini
 RUN echo -e "\n[Apcu]\nextension = apcu.so\n" >> ${INSTALL_PATH}/lib/php.ini
 RUN echo -e "\n[Protobuf]\nextension = protobuf.so\n" >> ${INSTALL_PATH}/lib/php.ini
@@ -85,6 +84,7 @@ RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'compo
 FROM rockylinux:9.5-minimal
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype libevent libxml2 libpng libjpeg libicu librdkafka libsodium libzip oniguruma openssl readline zlib && microdnf clean all
+ENV INSTALL_PATH /usr/local/php/8.4
 COPY --from=build ${INSTALL_PATH} ${INSTALL_PATH}
 COPY --from=build /composer /usr/local/bin/composer
 ENV PATH ${INSTALL_PATH}/bin/:${INSTALL_PATH}/sbin/:$PATH
