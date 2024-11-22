@@ -84,7 +84,7 @@ RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'compo
 
 FROM rockylinux/rockylinux:9.5-minimal
 RUN microdnf install -y epel-release && microdnf clean all
-RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 libxslt libpng libjpeg libicu librdkafka libsodium libzip oniguruma openssl readline zlib && microdnf clean all
+RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 libxslt libpng libjpeg libicu librdkafka libsodium libtidy libzip oniguruma openssl readline zlib && microdnf clean all
 ENV INSTALL_PATH /usr/local/php/8.4
 COPY --from=build ${INSTALL_PATH} ${INSTALL_PATH}
 COPY --from=build /composer /usr/local/bin/composer
