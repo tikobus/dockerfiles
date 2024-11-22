@@ -68,6 +68,7 @@ RUN sed -i 's/expose_php = On/expose_php = Off/g' ${INSTALL_PATH}/lib/php.ini
 RUN sed -i 's/;pid = run/pid = run/g' ${INSTALL_PATH}/etc/php-fpm.conf
 RUN sed -i "s/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/" ${INSTALL_PATH}/etc/php-fpm.d/www.conf
 RUN echo -e "\n[Opcache] \nzend_extension = opcache.so \nopcache.enable = 1 \nopcache.enable_cli = 1 \n" >> ${INSTALL_PATH}/lib/php.ini
+RUN echo -e "\n[Redis]\nextension = redis.so\n" >> ${INSTALL_PATH}/lib/php.ini
 RUN echo -e "\n[Event]\nextension = event.so\n" >> ${INSTALL_PATH}/lib/php.ini
 RUN echo -e "\n[Apcu]\nextension = apcu.so\n" >> ${INSTALL_PATH}/lib/php.ini
 RUN echo -e "\n[Protobuf]\nextension = protobuf.so\n" >> ${INSTALL_PATH}/lib/php.ini
