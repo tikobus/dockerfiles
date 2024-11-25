@@ -2,7 +2,7 @@ FROM rockylinux/rockylinux:9.5-minimal AS build
 ENV PHP_VERSION 8.4.1
 ENV INSTALL_PATH /usr/local/php/8.4
 RUN microdnf install -y epel-release
-RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel
+RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel
 RUN microdnf --enablerepo=epel install -y libsodium-devel libtidy-devel
 
 RUN curl -O https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz
@@ -11,7 +11,7 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
     && cd php-${PHP_VERSION} \
     && ./configure --prefix=${INSTALL_PATH} \
     --with-curl --with-freetype --with-gettext --with-gmp --with-jpeg --with-openssl --with-pear --with-readline --with-sodium --with-tidy --with-xsl --with-zip --with-zlib \
-    --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
+    --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-pgsql --with-pdo-pgsql \
     --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
     --enable-shmop --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm
 RUN cd php-${PHP_VERSION} && make -j4
@@ -84,7 +84,7 @@ RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'compo
 
 FROM rockylinux/rockylinux:9.5-minimal
 RUN microdnf install -y epel-release && microdnf clean all
-RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 libxslt libpng libjpeg libicu librdkafka libsodium libtidy libzip oniguruma openssl readline zlib && microdnf clean all
+RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 libxslt libpng libjpeg libicu librdkafka libpq libsodium libtidy libzip oniguruma openssl readline zlib && microdnf clean all
 ENV INSTALL_PATH /usr/local/php/8.4
 COPY --from=build ${INSTALL_PATH} ${INSTALL_PATH}
 COPY --from=build /composer /usr/local/bin/composer
