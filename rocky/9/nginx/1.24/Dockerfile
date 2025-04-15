@@ -10,7 +10,7 @@ RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
   && sed -i 's:CFLAGS="$CFLAGS -g":# CFLAGS="$CFLAGS -g":g' auto/cc/gcc \
   && ./configure --prefix=/usr/local/nginx \
   --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-http_sub_module \
-  --with-stream --with-stream_ssl_module --with-http_v2_module \
+  --with-stream --with-stream_ssl_module --with-http_v2_module --with-http_v3_module \
   --with-http_mp4_module --with-http_secure_link_module --with-http_auth_request_module \
   --with-threads --with-file-aio \
   --add-module=../njs-${NJS_VERSION}/nginx \
