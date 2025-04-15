@@ -1,4 +1,4 @@
-FROM rockylinux:9.2.20230513-minimal AS build
+FROM rockylinux/rockylinux:9.5-minimal AS build
 ENV VERSION 1.5.2
 RUN microdnf install -y wget git python3 python3-pip curl
 RUN mkdir /app
@@ -8,7 +8,7 @@ RUN cd /app/stable-diffusion-webui && python3 -m venv venv && source venv/bin/ac
 RUN cd /app/stable-diffusion-webui && sed -i 's/can_run_as_root=0/can_run_as_root=1/' webui.sh
 RUN cd /app/stable-diffusion-webui && curl -o models/Stable-diffusion/v1-5-pruned-emaonly.safetensors https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors
 
-FROM rockylinux:9.2.20230513-minimal
+FROM rockylinux/rockylinux:9.5-minimal
 WORKDIR /app/stable-diffusion-webui
 RUN microdnf install -y python3 git
 COPY --from=build /app /app

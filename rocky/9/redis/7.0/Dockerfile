@@ -1,4 +1,4 @@
-FROM rockylinux:9.3.20231119-minimal AS build
+FROM rockylinux/rockylinux:9.5-minimal AS build
 ENV redis_version 7.2.4
 RUN microdnf install -y gcc make tar
 
@@ -21,7 +21,7 @@ RUN mkdir -p /usr/local/redis/conf \
   && sed -i 's/bind 127.0.0.1 -::1/bind * -::*/' redis-${redis_version}/redis.conf \
   && cp redis-${redis_version}/redis.conf /usr/local/redis/conf/
 
-FROM rockylinux:9.3.20231119-minimal
+FROM rockylinux/rockylinux:9.5-minimal
 COPY --from=build /usr/local/redis /usr/local/redis
 ENV PATH /usr/local/redis/bin:$PATH
 EXPOSE 6379

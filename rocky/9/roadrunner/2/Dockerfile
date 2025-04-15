@@ -1,4 +1,4 @@
-FROM rockylinux:9.0.20220720-minimal AS build
+FROM rockylinux/rockylinux:9.5-minimal AS build
 RUN microdnf install -y git golang make
 
 # Install RoadRunner
