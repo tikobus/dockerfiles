@@ -1,5 +1,5 @@
 FROM rockylinux/rockylinux:9.5-minimal AS build
-ENV VERSION 1.5.2
+ENV VERSION 1.10.1
 RUN microdnf install -y wget git python3 python3-pip curl
 RUN mkdir /app
 RUN cd /app && git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
