@@ -1,5 +1,5 @@
 FROM rockylinux/rockylinux:9.5-minimal AS build
-ENV redis_version 7.2.4
+ENV redis_version 7.4.6
 RUN microdnf install -y gcc make tar
 
 RUN curl -O -L https://github.com/redis/redis/archive/${redis_version}.tar.gz \
