@@ -1,0 +1,21 @@
+name: Docker Grasscutter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-Grasscutter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.0.0
+        with:
+         registry: ghcr.io
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the Grasscutter Docker image
+        run: cd rocky/9/grasscutter/5.4 && docker build . --file Dockerfile --tag ghcr.io/tikobus/grasscutter:5.4 && docker push ghcr.io/tikobus/grasscutter:5.4
