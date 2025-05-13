@@ -1,5 +1,5 @@
 FROM rockylinux/rockylinux:9.5-minimal AS build
-ENV NGINX_VERSION 1.26.3
+ENV NGINX_VERSION 1.28.0
 ENV NJS_VERSION 0.8.10
 RUN microdnf install -y autoconf automake gcc gcc-c++ make tar which zlib-devel openssl-devel pcre-devel perl-devel libxml2-devel libxslt-devel
 RUN curl -O -L https://github.com/nginx/njs/archive/refs/tags/${NJS_VERSION}.tar.gz \
