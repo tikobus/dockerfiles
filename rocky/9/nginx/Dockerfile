@@ -18,7 +18,7 @@ RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
   && make install
 
 FROM rockylinux/rockylinux:9.5-minimal
-RUN microdnf install -y zlib openssl pcre && microdnf clean all
+RUN microdnf install -y zlib openssl pcre libxslt && microdnf clean all
 COPY --from=build /usr/local/nginx /usr/local/nginx
 ENV PATH /usr/local/nginx/sbin/:$PATH
 EXPOSE 80 443
