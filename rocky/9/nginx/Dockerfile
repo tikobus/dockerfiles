@@ -1,3 +1,4 @@
+FROM rockylinux/rockylinux:9.6-minimal AS build
 ENV NGINX_VERSION 1.28.0
 ENV NJS_VERSION 0.9.4
 ENV ACME_VERSION 0.3.0
