@@ -1,0 +1,19 @@
+jobs:
+  build-openclaw:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.0.0
+        with:
+         registry: ghcr.io
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Build the OpenClaw Docker image Amd64
+        run: docker build --file debian/13/OpenClaw/Dockerfile --tag ghcr.io/${{ github.actor }}/openclaw:3.8-debian .
+
+      - name: Push the OpenClaw Docker image Amd64
+        run: docker push ghcr.io/${{ github.actor }}/openclaw:3.8-debian 
