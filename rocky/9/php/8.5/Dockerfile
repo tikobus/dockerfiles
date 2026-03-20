@@ -17,42 +17,42 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
 RUN cd php-${PHP_VERSION} && make -j4
 RUN cd php-${PHP_VERSION} && make install
 
-RUN export VERSION=6.1.0 \
+RUN export VERSION=6.3.0 \
     && curl -O https://pecl.php.net/get/redis-${VERSION}.tgz \
     && tar zxf redis-${VERSION}.tgz \
     && cd redis-${VERSION} \
     && ${INSTALL_PATH}/bin/phpize \
     && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
 
-RUN export VERSION=3.0.8 \
+RUN export VERSION=3.1.4 \
     && curl -O https://pecl.php.net/get/event-${VERSION}.tgz \
     && tar zxf event-${VERSION}.tgz \
     && cd event-${VERSION} \
     && ${INSTALL_PATH}/bin/phpize \
     && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
 
-RUN export VERSION=5.1.24 \
+RUN export VERSION=5.1.28 \
     && curl -O https://pecl.php.net/get/apcu-${VERSION}.tgz \
     && tar zxf apcu-${VERSION}.tgz \
     && cd apcu-${VERSION} \
     && ${INSTALL_PATH}/bin/phpize \
     && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
 
-RUN export VERSION=3.18.3 \
+RUN export VERSION=4.33.6 \
     && curl -O https://pecl.php.net/get/protobuf-${VERSION}.tgz \
     && tar zxf protobuf-${VERSION}.tgz \
     && cd protobuf-${VERSION} \
     && ${INSTALL_PATH}/bin/phpize \
     && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
 
-RUN export VERSION=6.0.3 \
+RUN export VERSION=6.0.5 \
     && curl -O https://pecl.php.net/get/rdkafka-${VERSION}.tgz \
     && tar zxf rdkafka-${VERSION}.tgz \
     && cd rdkafka-${VERSION} \
     && ${INSTALL_PATH}/bin/phpize \
     && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
 
-RUN export VERSION=1.48.1 \
+RUN export VERSION=1.78.0 \
     && curl -O https://pecl.php.net/get/grpc-${VERSION}.tgz \
     && tar zxf grpc-${VERSION}.tgz \
     && cd grpc-${VERSION} \
