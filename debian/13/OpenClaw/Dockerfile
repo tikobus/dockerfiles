@@ -1,6 +1,6 @@
-FROM docker.io/library/node:22
-ENV CLAW_VERSION 2026.3.8
+FROM docker.io/library/node:24
+ENV CLAW_VERSION 2026.3.24
 RUN npm i -g openclaw@${CLAW_VERSION}
-ENV PATH /usr/local/kafka/bin/:$PATH
-CMD ["openclaw", "onboard", "--install-daemon"]
+RUN openclaw onboard
+CMD ["openclaw", "gateway"]
 EXPOSE 18789
