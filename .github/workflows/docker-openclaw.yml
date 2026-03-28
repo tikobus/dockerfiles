@@ -18,13 +18,13 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Build the OpenClaw Docker image Amd64
-        run: docker build --file debian/13/OpenClaw/Dockerfile --tag ghcr.io/${{ github.actor }}/openclaw:3.8-debian .
+        run: docker build --file debian/13/OpenClaw/Dockerfile --tag ghcr.io/${{ github.actor }}/openclaw:3.24-debian .
 
       - name: Push the OpenClaw Docker image Amd64
-        run: docker push ghcr.io/${{ github.actor }}/openclaw:3.8-debian 
+        run: docker push ghcr.io/${{ github.actor }}/openclaw:3.24-debian 
 
       - name: Build the OpenClaw Docker image Amd64
-        run: docker build --file alpine/3.23/openclaw/Dockerfile --tag ghcr.io/${{ github.actor }}/openclaw:3.8-alpine .
+        run: docker build --file alpine/3.23/openclaw/Dockerfile --tag ghcr.io/${{ github.actor }}/openclaw:3.24-alpine .
 
       - name: Push the OpenClaw Docker image Amd64
-        run: docker push ghcr.io/${{ github.actor }}/openclaw:3.8-alpine 
+        run: docker push ghcr.io/${{ github.actor }}/openclaw:3.24-alpine 
