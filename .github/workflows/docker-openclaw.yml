@@ -22,9 +22,3 @@ jobs:
 
       - name: Push the OpenClaw Docker image Amd64
         run: docker push ghcr.io/${{ github.actor }}/openclaw:3.24-debian 
-
-      - name: Build the OpenClaw Docker image Amd64
-        run: docker build --file alpine/3.23/openclaw/Dockerfile --tag ghcr.io/${{ github.actor }}/openclaw:3.24-alpine .
-
-      - name: Push the OpenClaw Docker image Amd64
-        run: docker push ghcr.io/${{ github.actor }}/openclaw:3.24-alpine 
