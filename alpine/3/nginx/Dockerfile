@@ -1,6 +1,6 @@
-FROM alpine:3.16.2 AS build
+FROM alpine:3 AS build
 WORKDIR /
-ENV NGINX_VERSION 1.22.0
+ENV NGINX_VERSION 1.30.1
 RUN apk add --no-cache alpine-sdk build-base pcre-dev openssl-dev zlib-dev
 
 RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
@@ -15,7 +15,7 @@ RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
   && make -j4 \
   && make install
 
-FROM alpine:3.16.2
+FROM alpine:3
 WORKDIR /
 RUN apk add --no-cache pcre openssl zlib
 COPY --from=build /usr/local/nginx /usr/local/nginx

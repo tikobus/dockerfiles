@@ -1,9 +1,9 @@
-FROM alpine:3.16.2 AS build
+FROM alpine:3 AS build
 ENV PHP_VERSION 8.1.11
-RUN apk add gcc g++ make perl autoconf automake
-RUN apk add openssl-dev curl-dev libevent-dev libxml2-dev librdkafka-dev libpng-dev 
-RUN apk add readline-dev freetype-dev zlib-dev sqlite-dev libzip-dev oniguruma-dev libjpeg-turbo-dev
-RUN apk add libintl musl-libintl icu-dev zlib-dev linux-headers musl-dev
+RUN apk add --no-cache gcc g++ make perl autoconf automake
+RUN apk add --no-cache openssl-dev curl-dev libevent-dev libxml2-dev librdkafka-dev libpng-dev 
+RUN apk add --no-cache readline-dev freetype-dev zlib-dev sqlite-dev libzip-dev oniguruma-dev libjpeg-turbo-dev
+RUN apk add --no-cache libintl musl-libintl icu-dev zlib-dev linux-headers musl-dev
 
 RUN wget https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz \
   && tar -zxf php-${PHP_VERSION}.tar.gz
@@ -80,7 +80,7 @@ RUN echo -e "\n[Rdkafka]\nextension = rdkafka.so\n" >> /usr/local/php/lib/php.in
 RUN echo -e "\n[Grpc]\nextension = grpc.so\n" >> /usr/local/php/lib/php.ini
 RUN rm -f /usr/local/php/bin/phpdbg
 
-FROM alpine:3.16.2
+FROM alpine:3
 RUN apk add --no-cache autoconf automake openssl curl libevent libxml2 libpng libjpeg readline freetype zlib librdkafka libzip oniguruma sqlite-libs icu
 COPY --from=build /usr/local/php /usr/local/php
 ENV PATH /usr/local/php/bin/:/usr/local/php/sbin/:$PATH
