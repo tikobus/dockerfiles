@@ -43,10 +43,10 @@ RUN set -ex && \
     make build && make install && \
     cd .. && rm -rf luarocks-*
 
-# 安装 APISIX
+# 安装 APISIX https://downloads.apache.org/apisix/3.16.0/apache-apisix-3.16.0-src.tgz
 RUN set -ex && \
-    wget https://downloads.apache.org/apisix/${APISIX_VERSION}/apache-apisix-${APISIX_VERSION}.src.tar.gz && \
-    tar -zxf apache-apisix-${APISIX_VERSION}.src.tar.gz && cd apache-apisix-${APISIX_VERSION} && \
+    wget https://downloads.apache.org/apisix/${APISIX_VERSION}/apache-apisix-${APISIX_VERSION}-src.tgz && \
+    tar -zxf apache-apisix-${APISIX_VERSION}-src.tgz && cd apache-apisix-${APISIX_VERSION} && \
     ${PREFIX}/luarocks/bin/luarocks make apisix-${APISIX_VERSION}-0.rockspec --tree=${PREFIX}/luarocks && \
     # 复制 APISIX 核心文件到目标目录
     cp -r ./ ${PREFIX}/ && \
