@@ -44,14 +44,22 @@ RUN set -ex && \
     cd .. && rm -rf luarocks-*
 
 # 安装 APISIX https://downloads.apache.org/apisix/3.16.0/apache-apisix-3.16.0-src.tgz
-RUN set -ex && \
-    wget https://downloads.apache.org/apisix/${APISIX_VERSION}/apache-apisix-${APISIX_VERSION}-src.tgz && \
-    mkdir apache-apisix-${APISIX_VERSION} && \
-    tar -zxf apache-apisix-${APISIX_VERSION}-src.tgz -C apache-apisix-${APISIX_VERSION} && cd apache-apisix-${APISIX_VERSION} && \
-    ${PREFIX}/luarocks/bin/luarocks make apisix-${APISIX_VERSION}-0.rockspec --tree=${PREFIX}/luarocks && \
-    # 复制 APISIX 核心文件到目标目录
-    cp -r ./ ${PREFIX}/ && \
-    cd .. && rm -rf apache-apisix-*
+
+# 下载 APISIX 源码包
+RUN set -ex && wget https://downloads.apache.org/apisix/${APISIX_VERSION}/apache-apisix-${APISIX_VERSION}-src.tgz
+
+# 解压源码包
+RUN set -ex && tar -zxf apache-apisix-${APISIX_VERSION}-src.tgz
+
+# 进入目录并编译安装 APISIX
+RUN set -ex && cd apache-apisix-${APISIX_VERSION} && \
+    ${PREFIX}/luarocks/bin/luarocks make apisix-${APISIX_VERSION}-0.rockspec --tree=${PREFIX}/luarocks
+
+# 复制文件到安装目录
+RUN set -ex && cd apache-apisix-${APISIX_VERSION} && cp -r ./ ${PREFIX}/
+
+# 清理安装包
+RUN set -ex && rm -rf apache-apisix-*
 
 # 构建最终镜像（多阶段构建，大幅减小体积）
 FROM rockylinux/rockylinux:9.7-minimal
