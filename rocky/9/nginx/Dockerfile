@@ -1,7 +1,7 @@
 FROM rockylinux/rockylinux:9.7-minimal AS build
-ENV NGINX_VERSION 1.30.1
-ENV NJS_VERSION 0.9.8
-ENV ACME_VERSION 0.4.0
+ENV NGINX_VERSION 1.30.2
+ENV NJS_VERSION 0.9.9
+ENV ACME_VERSION 0.4.1
 RUN microdnf install -y autoconf automake gcc gcc-c++ make tar which zlib-devel openssl-devel pcre-devel perl-devel libxml2-devel libxslt-devel rust cargo clang-devel
 RUN curl -O -L https://github.com/nginx/njs/archive/refs/tags/${NJS_VERSION}.tar.gz && tar zxf ${NJS_VERSION}.tar.gz
 RUN curl -O -L https://github.com/nginx/nginx-acme/releases/download/v${ACME_VERSION}/nginx-acme-${ACME_VERSION}.tar.gz && tar zxf nginx-acme-${ACME_VERSION}.tar.gz
