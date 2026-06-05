@@ -1,4 +1,4 @@
-FROM rockylinux/rockylinux:9.7-minimal AS build
+FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal AS build
 ENV PHP_VERSION 8.2.29
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel librdkafka-devel libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel 
 RUN microdnf install -y epel-release
@@ -82,7 +82,7 @@ RUN /usr/local/php/bin/php -r "copy('https://getcomposer.org/installer', 'compos
   && /usr/local/php/bin/php -r "unlink('composer-setup.php');" \
   && mv composer.phar /composer
 
-FROM rockylinux/rockylinux:9.7-minimal
+FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype libevent libxml2 libpng libjpeg libicu librdkafka libsodium libzip oniguruma openssl readline zlib && microdnf clean all
 COPY --from=build /usr/local/php /usr/local/php

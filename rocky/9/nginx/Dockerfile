@@ -1,4 +1,4 @@
-FROM rockylinux/rockylinux:9.7-minimal AS build
+FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal AS build
 ENV NGINX_VERSION 1.30.2
 ENV NJS_VERSION 0.9.9
 ENV ACME_VERSION 0.4.1
@@ -19,7 +19,7 @@ RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
   && make -j4 \
   && make install
 
-FROM rockylinux/rockylinux:9.7-minimal
+FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal
 RUN microdnf install -y zlib openssl pcre libxslt && microdnf clean all
 COPY --from=build /usr/local/nginx /usr/local/nginx
 ENV PATH /usr/local/nginx/sbin/:$PATH
