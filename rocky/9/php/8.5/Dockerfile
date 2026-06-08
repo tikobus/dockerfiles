@@ -1,6 +1,6 @@
 FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal AS build
-ENV PHP_VERSION 8.5.4
-ENV INSTALL_PATH /usr/local/php/8.4
+ENV PHP_VERSION 8.5.7
+ENV INSTALL_PATH /usr/local/php/8.5
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel
 RUN microdnf --enablerepo=epel install -y libsodium-devel libtidy-devel
@@ -85,7 +85,7 @@ RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'compo
 FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 libxslt libpng libjpeg libicu librdkafka libpq libsodium libtidy libzip oniguruma openssl readline zlib && microdnf clean all
-ENV INSTALL_PATH /usr/local/php/8.4
+ENV INSTALL_PATH /usr/local/php/8.5
 COPY --from=build ${INSTALL_PATH} ${INSTALL_PATH}
 COPY --from=build /composer /usr/local/bin/composer
 ENV PATH ${INSTALL_PATH}/bin/:${INSTALL_PATH}/sbin/:$PATH
