@@ -1,5 +1,5 @@
 FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal AS build
-ENV PHP_VERSION 8.4.14
+ENV PHP_VERSION 8.4.23
 ENV INSTALL_PATH /usr/local/php/8.4
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel
