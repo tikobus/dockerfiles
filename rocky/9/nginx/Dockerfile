@@ -1,5 +1,5 @@
 FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal AS build
-ENV NGINX_VERSION 1.30.2
+ENV NGINX_VERSION 1.30.3
 ENV NJS_VERSION 0.9.9
 ENV ACME_VERSION 0.4.1
 RUN microdnf install -y autoconf automake gcc gcc-c++ make tar which zlib-devel openssl-devel pcre-devel perl-devel libxml2-devel libxslt-devel rust cargo clang-devel
