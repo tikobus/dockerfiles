@@ -18,4 +18,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the APISIX Docker image
-        run: docker build . --file rocky/9/apisix/Dockerfile --tag ghcr.io/tikobus/apisix:3.16-debian && docker push ghcr.io/tikobus/apisix:3.16-debian
+        run: docker build . --file rocky/9/apisix/Dockerfile --tag ghcr.io/tikobus/apisix:3.18-debian && docker push ghcr.io/tikobus/apisix:3.18-debian
