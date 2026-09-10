@@ -1,5 +1,8 @@
-FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal AS build
-ENV NGINX_VERSION 1.30.3
+ARG BASE_ROCKY_VERSION ${{ BASE_ROCKY_VERSION }}
+ARG NGINX_VERSION ${{ NGINX_VERSION }}
+
+FROM ghcr.io/tikobus/rockylinux:$BASE_ROCKY_VERSION AS build
+ENV NGINX_VERSION $NGINX_VERSION
 ENV NJS_VERSION 0.9.9
 ENV ACME_VERSION 0.4.1
 RUN microdnf install -y autoconf automake gcc gcc-c++ make tar which zlib-devel openssl-devel pcre-devel perl-devel libxml2-devel libxslt-devel rust cargo clang-devel
@@ -19,7 +22,7 @@ RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
   && make -j4 \
   && make install
 
-FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal
+FROM ghcr.io/tikobus/rockylinux:$BASE_ROCKY_VERSION
 RUN microdnf install -y zlib openssl pcre libxslt && microdnf clean all
 COPY --from=build /usr/local/nginx /usr/local/nginx
 ENV PATH /usr/local/nginx/sbin/:$PATH
