@@ -26,4 +26,4 @@ jobs:
          username: ${{ github.actor }}
          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build the Docker Rocky Base Amd64 image
-        run: docker build . --file rocky/9/base/Dockerfile --tag ghcr.io/tikobus/rockylinux:$rocky_version && docker push ghcr.io/tikobus/rockylinux:$rocky_version
+        run: docker build . --file rocky/9/base/Dockerfile --build-arg BASE_ROCKY_VERSION=$rocky_version --tag ghcr.io/tikobus/rockylinux:$rocky_version && docker push ghcr.io/tikobus/rockylinux:$rocky_version
