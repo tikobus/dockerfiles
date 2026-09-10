@@ -1,1 +1,3 @@
-FROM rockylinux/rockylinux:${{ vars.BASE_ROCKY_VERSION }}
+ARG BASE_ROCKY_VERSION
+
+FROM rockylinux/rockylinux:${BASE_ROCKY_VERSION}
