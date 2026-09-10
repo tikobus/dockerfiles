@@ -1,11 +1,12 @@
 name: Docker Rocky Base Amd64
 on:
   workflow_dispatch:
-env:
-  rocky_version: ${{ vars.BASE_ROCKY_VERSION }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      rocky_version: ${{ vars.BASE_ROCKY_VERSION }}
     steps:
       - name: Debug 查看变量
         run: |
