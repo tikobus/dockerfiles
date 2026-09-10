@@ -1,1 +1,1 @@
-FROM rockylinux/rockylinux:9.8.20260525.0-minimal
+FROM rockylinux/rockylinux:${{ vars.BASE_ROCKY_VERSION }}
