@@ -18,7 +18,7 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Build the Nginx Docker image Amd64
-        run: docker build --file rocky/9/nginx/Dockerfile --tag ghcr.io/${{ github.actor }}/nginx:1.30-rocky .
+        run: docker build --file rocky/9/nginx/Dockerfile --build-arg BASE_ROCKY_VERSION=${{ vars.BASE_ROCKY_VERSION }} --build-arg NGINX_VERSION=${{ vars.NGINX_VERSION }} --tag ghcr.io/${{ github.actor }}/nginx:1.30-rocky .
 
       - name: Push the Nginx Docker image Amd64
-        run: docker push ghcr.io/${{ github.actor }}/nginx:1.30-rocky
+        run: docker push ghcr.io/${{ github.actor }}/nginx:${{ vars.NGINX_VERSION }}-rocky
