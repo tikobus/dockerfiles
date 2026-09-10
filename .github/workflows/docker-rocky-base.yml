@@ -1,24 +1,28 @@
 name: Docker Rocky Base Amd64
-
 on:
   workflow_dispatch:
-
 env:
   rocky_version: ${{ vars.BASE_ROCKY_VERSION }}
-
 jobs:
-  build-php81:
+  build:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug 查看变量
+        run: |
+          echo "==== vars原始值 ===="
+          echo "BASE_ROCKY_VERSION = ${{ vars.BASE_ROCKY_VERSION }}"
+          echo "==== workflow env ===="
+          echo "rocky_version = $rocky_version"
+          echo "==== template env ===="
+          echo "${{ env.rocky_version }}"
+
       - name: Check out the repo
         uses: actions/checkout@v3
-
       - name: Log in to the Container registry
         uses: docker/login-action@v2.0.0
         with:
          registry: ghcr.io
          username: ${{ github.actor }}
          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build the Docker Rocky Base Amd64 image
         run: docker build . --file rocky/9/base/Dockerfile --tag ghcr.io/tikobus/rockylinux:$rocky_version && docker push ghcr.io/tikobus/rockylinux:$rocky_version
