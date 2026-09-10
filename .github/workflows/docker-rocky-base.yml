@@ -18,4 +18,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the Docker Rocky Base Amd64 image
-        run: docker build . --file rocky/9/base/Dockerfile --tag ghcr.io/tikobus/rockylinux:9.7.20251123-minimal && docker push ghcr.io/tikobus/rockylinux:9.7.20251123-minimal
+        run: docker build . --file rocky/9/base/Dockerfile --tag ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal && docker push ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal-minimal
