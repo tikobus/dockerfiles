@@ -3,7 +3,7 @@ ARG NGINX_VERSION ${{ NGINX_VERSION }}
 
 FROM ghcr.io/tikobus/rockylinux:$BASE_ROCKY_VERSION AS build
 ENV NGINX_VERSION $NGINX_VERSION
-ENV NJS_VERSION 0.9.9
+ENV NJS_VERSION 1.0.1
 ENV ACME_VERSION 0.4.1
 RUN microdnf install -y autoconf automake gcc gcc-c++ make tar which zlib-devel openssl-devel pcre-devel perl-devel libxml2-devel libxslt-devel rust cargo clang-devel
 RUN curl -O -L https://github.com/nginx/njs/archive/refs/tags/${NJS_VERSION}.tar.gz && tar zxf ${NJS_VERSION}.tar.gz
