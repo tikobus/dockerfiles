@@ -1,0 +1,4 @@
+# 默认站点
+:80 {
+    respond "Hello from Caddy on Rocky Linux 9" 200
+}
