@@ -2,6 +2,11 @@ name: Build Rocky9 Caddy Image
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '2.11.4'
 
 jobs:
   build:
@@ -25,6 +30,6 @@ jobs:
         with:
           context: ./rocky/9/caddy
           push: ${{ github.event_name != 'pull_request' }}
-          tags: tikobus/rocky9-caddy:2.11.4
+          tags: tikobus/rocky9-caddy:${{ inputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

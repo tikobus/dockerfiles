@@ -2,6 +2,11 @@ name: Docker OpenClaw Debian Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '2026.4.11'
 
 jobs:
   build-openclaw:
@@ -18,7 +23,7 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Build the OpenClaw Docker image Amd64
-        run: docker build --file debian/13/OpenClaw/Dockerfile --tag ghcr.io/${{ github.actor }}/openclaw:2026.4.11-debian .
+        run: docker build --file debian/13/OpenClaw/Dockerfile --tag ghcr.io/${{ github.actor }}/openclaw:${{ inputs.version }}-debian .
 
       - name: Push the OpenClaw Docker image Amd64
-        run: docker push ghcr.io/${{ github.actor }}/openclaw:2026.4.11-debian 
+        run: docker push ghcr.io/${{ github.actor }}/openclaw:${{ inputs.version }}-debian

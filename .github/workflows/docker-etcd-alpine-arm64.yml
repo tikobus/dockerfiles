@@ -2,6 +2,11 @@ name: Docker Etcd Alpine Arm64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '3.5'
 
 jobs:
   build-etcd:
@@ -24,7 +29,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
  
       - name: Build the Etcd Docker image Arm64
-        run: docker buildx build --platform=linux/arm64 --file alpine/3.16/etcd/3.5/Dockerfile --tag ghcr.io/${{ github.actor }}/etcd:3.5-alpine-arm64 . --load
+        run: docker buildx build --platform=linux/arm64 --file alpine/3.16/etcd/3.5/Dockerfile --tag ghcr.io/${{ github.actor }}/etcd:${{ inputs.version }}-alpine-arm64 . --load
 
       - name: Push the Etcd Docker image Arm64
-        run: docker push ghcr.io/${{ github.actor }}/etcd:3.5-alpine-arm64
+        run: docker push ghcr.io/${{ github.actor }}/etcd:${{ inputs.version }}-alpine-arm64

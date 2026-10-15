@@ -2,6 +2,11 @@ name: Docker Filebeat Alpine Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '8.4'
 
 jobs:
   build-filebeat:
@@ -18,7 +23,7 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Filebeat Docker image
-        run: docker build --file alpine/3.16/filebeat/8.4/Dockerfile --tag ghcr.io/${{ github.actor }}/filebeat:8.4-alpine . 
+        run: docker build --file alpine/3.16/filebeat/8.4/Dockerfile --tag ghcr.io/${{ github.actor }}/filebeat:${{ inputs.version }}-alpine .
     
       - name: Push the Filebeat Docker image
-        run: docker push ghcr.io/${{ github.actor }}/filebeat:8.4-alpine
+        run: docker push ghcr.io/${{ github.actor }}/filebeat:${{ inputs.version }}-alpine

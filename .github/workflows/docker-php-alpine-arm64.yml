@@ -2,6 +2,11 @@ name: Docker PHP Alpine Arm64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '8.1'
 
 jobs:
   build-php81:
@@ -24,8 +29,8 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build the PHP 8.1 Docker image
-        run: docker buildx build --platform=linux/arm64 --file alpine/3.16/php/8.1/Dockerfile --tag ghcr.io/tikobus/php:8.1-alpine-arm64 . --load
+        run: docker buildx build --platform=linux/arm64 --file alpine/3.16/php/8.1/Dockerfile --tag ghcr.io/tikobus/php:${{ inputs.version }}-alpine-arm64 . --load
         
       - name: Push the PHP 8.1 Docker image
-        run: docker push ghcr.io/tikobus/php:8.1-alpine-arm64
+        run: docker push ghcr.io/tikobus/php:${{ inputs.version }}-alpine-arm64
  

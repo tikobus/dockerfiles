@@ -2,6 +2,11 @@ name: Docker PHP 8.5 Rocky Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '8.5'
 
 jobs:
   build-php:
@@ -18,5 +23,5 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the PHP 8 Docker image
-        run: docker build . --file rocky/9/php/8.5/Dockerfile --tag ghcr.io/tikobus/php:8.5-rocky && docker push ghcr.io/tikobus/php:8.5-rocky
+        run: docker build . --file rocky/9/php/8.5/Dockerfile --tag ghcr.io/tikobus/php:${{ inputs.version }}-rocky && docker push ghcr.io/tikobus/php:${{ inputs.version }}-rocky
         

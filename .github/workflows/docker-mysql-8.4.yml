@@ -2,6 +2,11 @@ name: Docker Mysql 8.4 Rocky Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '8.4'
 
 jobs:
   build-mysql:
@@ -18,4 +23,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Mysql Docker image
-        run: docker build . --file rocky/9/mysql/8.4/Dockerfile --tag ghcr.io/${{ github.actor }}/mysql:8.4-rocky && docker push ghcr.io/${{ github.actor }}/mysql:8.4-rocky
+        run: docker build . --file rocky/9/mysql/8.4/Dockerfile --tag ghcr.io/${{ github.actor }}/mysql:${{ inputs.version }}-rocky && docker push ghcr.io/${{ github.actor }}/mysql:${{ inputs.version }}-rocky

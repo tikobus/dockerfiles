@@ -2,6 +2,11 @@ name: Docker PHP 8.2 Amazon Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '8.2'
 
 jobs:
   build-php82:
@@ -18,4 +23,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the PHP 8.2 Docker image
-        run: docker build . --file amazon/2.0/php/8.2/Dockerfile --tag ghcr.io/tikobus/php:8.2-amazon && docker push ghcr.io/tikobus/php:8.2-amazon
+        run: docker build . --file amazon/2.0/php/8.2/Dockerfile --tag ghcr.io/tikobus/php:${{ inputs.version }}-amazon && docker push ghcr.io/tikobus/php:${{ inputs.version }}-amazon

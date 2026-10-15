@@ -2,6 +2,11 @@ name: Docker Grasscutter
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '5.4'
 
 jobs:
   build-Grasscutter:
@@ -18,4 +23,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the Grasscutter Docker image
-        run: cd rocky/9/grasscutter/5.4 && docker build . --file Dockerfile --tag ghcr.io/tikobus/grasscutter:5.4 && docker push ghcr.io/tikobus/grasscutter:5.4
+        run: cd rocky/9/grasscutter/5.4 && docker build . --file Dockerfile --tag ghcr.io/tikobus/grasscutter:${{ inputs.version }} && docker push ghcr.io/tikobus/grasscutter:${{ inputs.version }}

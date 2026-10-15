@@ -2,6 +2,11 @@ name: Docker Wol Alpine Arm64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '0.2.1'
 
 jobs:
   build-wol:
@@ -24,7 +29,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
  
       - name: Build the Wol Docker image Arm64
-        run: docker buildx build --platform=linux/arm64 --file alpine/3.16/wol/0.2.1/Dockerfile --tag ghcr.io/${{ github.actor }}/wol:0.2.1-alpine-arm64 . --load
+        run: docker buildx build --platform=linux/arm64 --file alpine/3.16/wol/0.2.1/Dockerfile --tag ghcr.io/${{ github.actor }}/wol:${{ inputs.version }}-alpine-arm64 . --load
 
       - name: Push the Wol Docker image Arm64
-        run: docker push ghcr.io/${{ github.actor }}/wol:0.2.1-alpine-arm64
+        run: docker push ghcr.io/${{ github.actor }}/wol:${{ inputs.version }}-alpine-arm64

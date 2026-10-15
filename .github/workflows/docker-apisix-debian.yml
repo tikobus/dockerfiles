@@ -2,6 +2,11 @@ name: Docker APISIX Debian Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '3.18'
 
 jobs:
   build-apisix:
@@ -18,4 +23,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the APISIX Docker image
-        run: docker build . --file rocky/9/apisix/Dockerfile --tag ghcr.io/tikobus/apisix:3.18-debian && docker push ghcr.io/tikobus/apisix:3.18-debian
+        run: docker build . --file rocky/9/apisix/Dockerfile --tag ghcr.io/tikobus/apisix:${{ inputs.version }}-debian && docker push ghcr.io/tikobus/apisix:${{ inputs.version }}-debian

@@ -2,6 +2,11 @@ name: Docker Mongo Rocky Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '8.0'
 
 jobs:
   build-mysql:
@@ -18,4 +23,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Mysql Docker image
-        run: docker build . --file rocky/9/mongo/Dockerfile --tag ghcr.io/${{ github.actor }}/mongo:8.0 && docker push ghcr.io/${{ github.actor }}/mongo:8.0
+        run: docker build . --file rocky/9/mongo/Dockerfile --tag ghcr.io/${{ github.actor }}/mongo:${{ inputs.version }} && docker push ghcr.io/${{ github.actor }}/mongo:${{ inputs.version }}

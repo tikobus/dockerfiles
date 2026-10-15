@@ -2,6 +2,11 @@ name: Docker Redis Rocky Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '7.0'
 
 jobs:
   build-redis:
@@ -18,7 +23,7 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Redis Docker image
-        run: docker build --file rocky/9/redis/7.0/Dockerfile --tag ghcr.io/${{ github.actor }}/redis:7.0-rocky .
+        run: docker build --file rocky/9/redis/7.0/Dockerfile --tag ghcr.io/${{ github.actor }}/redis:${{ inputs.version }}-rocky .
     
       - name: Push the Redis Docker image
-        run: docker push ghcr.io/${{ github.actor }}/redis:7.0-rocky
+        run: docker push ghcr.io/${{ github.actor }}/redis:${{ inputs.version }}-rocky

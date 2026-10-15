@@ -2,6 +2,11 @@ name: Docker Seatunnel Rocky Amd64
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '2.3'
 
 jobs:
   build-mysql:
@@ -18,4 +23,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Build the Seatunnel Docker image
-        run: docker build . --file rocky/9/seatunnel/2.3/Dockerfile --tag ghcr.io/${{ github.actor }}/seatunnel:2.3-rocky && docker push ghcr.io/${{ github.actor }}/seatunnel:2.3-rocky
+        run: docker build . --file rocky/9/seatunnel/2.3/Dockerfile --tag ghcr.io/${{ github.actor }}/seatunnel:${{ inputs.version }}-rocky && docker push ghcr.io/${{ github.actor }}/seatunnel:${{ inputs.version }}-rocky
