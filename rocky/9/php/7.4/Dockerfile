@@ -1,9 +1,10 @@
 FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal AS build
 ENV PHP_VERSION 7.4.33
 ENV INSTALL_PATH /usr/local/php/7.4
-RUN microdnf install -y epel-release git bison flex re2c
+RUN microdnf install -y epel-release git bison flex 
+RUN microdnf config-manager --set-enabled crb
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel
-RUN microdnf --enablerepo=epel install -y libsodium-devel libtidy-devel
+RUN microdnf --enablerepo=epel install -y libsodium-devel libtidy-devel re2c
 
 RUN git clone -b PHP-7.4-CVE-2026-109618-109619 --single-branch https://github.com/php/php-src.git && mv php-src php-${PHP_VERSION}
 
