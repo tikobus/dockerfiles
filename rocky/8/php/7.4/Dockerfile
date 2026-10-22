@@ -1,8 +1,8 @@
 FROM rockylinux/rockylinux:8.10-minimal AS build
 ENV PHP_VERSION 7.4.33
 # EL8: devel 仓库的名字是 PowerTools(EL9 叫 devel), libzip-devel 等需要启用
-RUN microdnf --enablerepo=PowerTools install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-turbo-devel libpng-devel libxml2-devel libzip-devel make openssl-devel readline-devel sqlite-devel tar zlib-devel
 RUN microdnf install -y epel-release
+RUN microdnf install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-turbo-devel libpng-devel libxml2-devel libzip-devel make openssl-devel readline-devel sqlite-devel tar zlib-devel
 RUN microdnf --enablerepo=epel install -y libsodium-devel oniguruma-devel
 
 # EL8 仓库里的 librdkafka 是 0.11, 而 pecl rdkafka 6.x 需要 librdkafka >= 1.0, 因此源码编译
