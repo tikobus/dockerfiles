@@ -1,0 +1,26 @@
+name: Docker PHP 7.4 Rocky8 Amd64
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号'
+        required: true
+        default: '7.4'
+
+jobs:
+  build-php74:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.0.0
+        with:
+         registry: ghcr.io
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the PHP 7.4 Docker image
+        run: docker build . --file rocky/8/php/7.4/Dockerfile --tag ghcr.io/tikobus/php:${{ inputs.version }}-rocky8 && docker push ghcr.io/tikobus/php:${{ inputs.version }}-rocky8
