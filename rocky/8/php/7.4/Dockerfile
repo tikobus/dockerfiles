@@ -47,13 +47,6 @@ RUN export VERSION=3.18.3 \
     && /usr/local/php/bin/phpize \
     && ./configure --with-php-config=/usr/local/php/bin/php-config && make -j4 && make install
 
-RUN export VERSION=6.0.3 \
-    && curl -O https://pecl.php.net/get/rdkafka-${VERSION}.tgz \
-    && tar zxf rdkafka-${VERSION}.tgz \
-    && cd rdkafka-${VERSION} \
-    && /usr/local/php/bin/phpize \
-    && ./configure --with-php-config=/usr/local/php/bin/php-config && make -j4 && make install
-
 RUN export VERSION=1.48.1 \
     && curl -O https://pecl.php.net/get/grpc-${VERSION}.tgz \
     && tar zxf grpc-${VERSION}.tgz \
@@ -74,7 +67,6 @@ RUN echo -e "\n[Redis]\nextension = redis.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Event]\nextension = event.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Apcu]\nextension = apcu.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Protobuf]\nextension = protobuf.so\n" >> /usr/local/php/lib/php.ini
-RUN echo -e "\n[Rdkafka]\nextension = rdkafka.so\n" >> /usr/local/php/lib/php.ini
 RUN echo -e "\n[Grpc]\nextension = grpc.so\n" >> /usr/local/php/lib/php.ini
 
 # Install Composer
