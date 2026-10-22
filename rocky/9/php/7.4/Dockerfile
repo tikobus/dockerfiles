@@ -17,8 +17,9 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
     && cd php-${PHP_VERSION} \
     && ./buildconf --force \
     && ./configure --prefix=${INSTALL_PATH} \
-    --with-curl --with-freetype --with-gettext --with-gmp --with-jpeg --with-openssl --with-pear --with-readline --with-sodium --with-tidy --with-xsl --with-zip --with-zlib \
+    --with-curl --with-freetype --with-gettext --with-gmp --with-jpeg --with-pear --with-readline --with-sodium --with-tidy --with-xsl --with-zip --with-zlib \
     --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-pgsql --with-pdo-pgsql \
+    --with-openssl=/usr/lib64/openssl11 \
     --enable-apcu --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl --enable-redis \
     --enable-shmop --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm
 RUN cd php-${PHP_VERSION} && make -j4
