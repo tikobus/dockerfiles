@@ -5,14 +5,6 @@ RUN microdnf install -y epel-release
 RUN microdnf install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-turbo-devel libpng-devel libxml2-devel libzip-devel make openssl-devel readline-devel sqlite-devel tar zlib-devel
 RUN microdnf --enablerepo=epel --enablerepo=devel install -y libsodium-devel oniguruma-devel
 
-# EL8 仓库里的 librdkafka 是 0.11, 而 pecl rdkafka 6.x 需要 librdkafka >= 1.0, 因此源码编译
-RUN export VERSION=1.9.2 \
-    && curl -fSL -o librdkafka-${VERSION}.tar.gz https://github.com/edenhill/librdkafka/archive/refs/tags/v${VERSION}.tar.gz \
-    && tar zxf librdkafka-${VERSION}.tar.gz \
-    && cd librdkafka-${VERSION} \
-    && ./configure --prefix=/usr/local \
-    && make -j4 && make install
-
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig/
 
 RUN curl -fSL -O https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz \
@@ -96,7 +88,6 @@ FROM rockylinux/rockylinux:8.10-minimal
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype libevent libicu libjpeg-turbo libpng libsodium libstdc++ libxml2 libzip oniguruma openssl readline zlib && microdnf clean all
 COPY --from=build /usr/local/php /usr/local/php
-# 源码编译的 librdkafka 安装在 /usr/local/lib, 需要带入运行镜像并注册动态库路径
 COPY --from=build /usr/local/lib /usr/local/lib
 RUN echo /usr/local/lib > /etc/ld.so.conf.d/usr-local.conf && ldconfig
 COPY --from=build /composer /usr/local/bin/composer
