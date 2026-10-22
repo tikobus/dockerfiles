@@ -6,10 +6,10 @@ on:
       version:
         description: '版本号'
         required: true
-        default: '7.4'
+        default: '7.4.33'
 
 jobs:
-  build-php82:
+  build-php:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
