@@ -1,6 +1,6 @@
 FROM rockylinux/rockylinux:8.10-minimal AS build
 ENV PHP_VERSION 7.4.33
-# EL8: devel 仓库的名字是 PowerTools(EL9 叫 devel), libzip-devel 等需要启用
+
 RUN microdnf install -y epel-release
 RUN microdnf install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-turbo-devel libpng-devel libxml2-devel libzip-devel make openssl-devel readline-devel sqlite-devel tar zlib-devel
 RUN microdnf --enablerepo=epel --enablerepo=devel install -y libsodium-devel oniguruma-devel
@@ -9,7 +9,7 @@ ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig/
 
 RUN curl -fSL -O https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz \
     && tar zxf php-${PHP_VERSION}.tar.gz
-RUN microdnf --enablerepo=PowerTools install -y libevent-devel
+RUN microdnf --enablerepo=devel install -y libevent-devel
 RUN cd php-${PHP_VERSION} \
     && ./configure --prefix=/usr/local/php \
     --with-curl --with-freetype --with-gettext --with-iconv-dir --with-jpeg --with-openssl --with-pear --with-readline --with-sodium --with-xmlrpc --with-zip --with-zlib \
