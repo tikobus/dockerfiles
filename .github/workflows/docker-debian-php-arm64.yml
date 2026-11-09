@@ -37,9 +37,9 @@ jobs:
           short="${V%.*}"
           cd php-${{ inputs.php_version }}
           ./configure \
-            --prefix=/usr/local/php-${short} \
-            --with-config-file-path=/usr/local/php-${short}/etc \
-            --with-config-file-scan-dir=/usr/local/php-${short}/etc/conf.d \
+            --prefix=/usr/local/php/${short} \
+            --with-config-file-path=/usr/local/php/${short}/etc \
+            --with-config-file-scan-dir=/usr/local/php/${short}/etc/conf.d \
             --enable-fpm --enable-cli \
             --enable-mbstring --enable-intl --enable-bcmath --enable-pcntl \
             --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
@@ -49,7 +49,7 @@ jobs:
             --with-readline
           make -j"$(nproc)"
           make install INSTALL_ROOT=/tmp/pkgroot
-          mkdir -p /tmp/pkgroot/usr/local/php-${short}/etc/conf.d
+          mkdir -p /tmp/pkgroot/usr/local/php/${short}/etc/conf.d
 
       - name: 打 deb 包
         run: |
@@ -100,6 +100,6 @@ jobs:
           apt-get install -y /tmp/deb/php_*_arm64.deb
           V="${{ inputs.php_version }}"
           short="${V%.*}"
-          /usr/local/php-${short}/bin/php -v
-          /usr/local/php-${short}/bin/php -m
-          /usr/local/php-${short}/sbin/php-fpm -t || true
+          /usr/local/php/${short}/bin/php -v
+          /usr/local/php/${short}/bin/php -m
+          /usr/local/php/${short}/sbin/php-fpm -t || true
