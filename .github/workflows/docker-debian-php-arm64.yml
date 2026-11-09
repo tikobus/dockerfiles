@@ -33,11 +33,13 @@ jobs:
 
       - name: 编译并安装到临时目录
         run: |
+          V="${{ inputs.php_version }}"
+          short="${V%.*}"
           cd php-${{ inputs.php_version }}
           ./configure \
-            --prefix=/opt/php-${{ inputs.php_version }} \
-            --with-config-file-path=/opt/php-${{ inputs.php_version }}/etc \
-            --with-config-file-scan-dir=/opt/php-${{ inputs.php_version }}/etc/conf.d \
+            --prefix=/usr/local/php-${short} \
+            --with-config-file-path=/usr/local/php-${short}/etc \
+            --with-config-file-scan-dir=/usr/local/php-${short}/etc/conf.d \
             --enable-fpm --enable-cli \
             --enable-mbstring --enable-intl --enable-bcmath --enable-pcntl \
             --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
@@ -47,23 +49,24 @@ jobs:
             --with-readline
           make -j"$(nproc)"
           make install INSTALL_ROOT=/tmp/pkgroot
-          mkdir -p /tmp/pkgroot/opt/php-${{ inputs.php_version }}/etc/conf.d
+          mkdir -p /tmp/pkgroot/usr/local/php-${short}/etc/conf.d
 
       - name: 打 deb 包
         run: |
           V=${{ inputs.php_version }}
+          short="${V%.*}"
           ROOT=/tmp/pkgroot
           mkdir -p $ROOT/DEBIAN
 
           # 自动生成运行时依赖
           mkdir -p /tmp/dep/debian && touch /tmp/dep/debian/control
           cd /tmp/dep
-          DEPS=$(dpkg-shlibdeps -O -e$ROOT/opt/php-$V/bin/php \
-                   -e$ROOT/opt/php-$V/sbin/php-fpm 2>/dev/null \
+          DEPS=$(dpkg-shlibdeps -O -e$ROOT/usr/local/php-$V/bin/php \
+                   -e$ROOT/usr/local/php-$V/sbin/php-fpm 2>/dev/null \
                  | sed 's/^shlibs:Depends=//')
 
           cat > $ROOT/DEBIAN/control <<EOF
-          Package: php-custom
+          Package: php
           Version: ${V}-1
           Architecture: arm64
           Maintainer: you <you@example.com>
@@ -71,13 +74,13 @@ jobs:
           Description: PHP ${V} built for Debian 12 (bookworm) arm64
           EOF
 
-          dpkg-deb --build --root-owner-group $ROOT /tmp/php-custom_${V}-1_arm64.deb
-          dpkg-deb -I /tmp/php-custom_${V}-1_arm64.deb
+          dpkg-deb --build --root-owner-group $ROOT /tmp/php_${V}-1_arm64.deb
+          dpkg-deb -I /tmp/php_${V}-1_arm64.deb
 
       - uses: actions/upload-artifact@v4
         with:
           name: php-${{ inputs.php_version }}-bookworm-arm64-deb
-          path: /tmp/php-custom_*_arm64.deb
+          path: /tmp/php_*_arm64.deb
 
   test:
     needs: build
@@ -94,7 +97,9 @@ jobs:
         run: |
           cat /etc/debian_version
           apt-get update
-          apt-get install -y /tmp/deb/php-custom_*_arm64.deb
-          /opt/php-${{ inputs.php_version }}/bin/php -v
-          /opt/php-${{ inputs.php_version }}/bin/php -m
-          /opt/php-${{ inputs.php_version }}/sbin/php-fpm -t || true
+          apt-get install -y /tmp/deb/php_*_arm64.deb
+          V="${{ inputs.php_version }}"
+          short="${V%.*}"
+          /usr/local/php-${short}/bin/php -v
+          /usr/local/php-${short}/bin/php -m
+          /usr/local/php-${short}/sbin/php-fpm -t || true
