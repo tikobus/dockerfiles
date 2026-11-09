@@ -1,0 +1,100 @@
+name: Build PHP deb (Debian 12 / arm64)
+
+on:
+  workflow_dispatch:
+    inputs:
+      php_version:
+        description: "PHP 版本"
+        default: "8.5.12"
+
+jobs:
+  build:
+    # GitHub 原生 arm64 runner(公开仓库免费),无需 QEMU
+    runs-on: ubuntu-24.04-arm
+    container: debian:bookworm
+
+    steps:
+      - name: 安装编译依赖
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential autoconf bison re2c pkg-config file \
+            curl ca-certificates xz-utils dpkg-dev \
+            libxml2-dev libssl-dev libcurl4-openssl-dev libsqlite3-dev \
+            libonig-dev libzip-dev libpng-dev libjpeg-dev libwebp-dev \
+            libfreetype-dev libicu-dev libsodium-dev libargon2-dev \
+            libreadline-dev zlib1g-dev
+
+      - name: 下载源码
+        run: |
+          curl -fsSL -o php.tar.xz \
+            "https://www.php.net/distributions/php-${{ inputs.php_version }}.tar.xz"
+          tar xf php.tar.xz
+
+      - name: 编译并安装到临时目录
+        run: |
+          cd php-${{ inputs.php_version }}
+          ./configure \
+            --prefix=/opt/php-${{ inputs.php_version }} \
+            --with-config-file-path=/opt/php-${{ inputs.php_version }}/etc \
+            --with-config-file-scan-dir=/opt/php-${{ inputs.php_version }}/etc/conf.d \
+            --enable-fpm --enable-cli \
+            --enable-mbstring --enable-intl --enable-bcmath --enable-pcntl \
+            --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
+            --with-openssl --with-curl --with-zlib --with-zip \
+            --with-sodium --with-password-argon2 \
+            --enable-gd --with-jpeg --with-webp --with-freetype \
+            --with-readline
+          make -j"$(nproc)"
+          make install INSTALL_ROOT=/tmp/pkgroot
+          mkdir -p /tmp/pkgroot/opt/php-${{ inputs.php_version }}/etc/conf.d
+
+      - name: 打 deb 包
+        run: |
+          V=${{ inputs.php_version }}
+          ROOT=/tmp/pkgroot
+          mkdir -p $ROOT/DEBIAN
+
+          # 自动生成运行时依赖
+          mkdir -p /tmp/dep/debian && touch /tmp/dep/debian/control
+          cd /tmp/dep
+          DEPS=$(dpkg-shlibdeps -O -e$ROOT/opt/php-$V/bin/php \
+                   -e$ROOT/opt/php-$V/sbin/php-fpm 2>/dev/null \
+                 | sed 's/^shlibs:Depends=//')
+
+          cat > $ROOT/DEBIAN/control <<EOF
+          Package: php-custom
+          Version: ${V}-1
+          Architecture: arm64
+          Maintainer: you <you@example.com>
+          Depends: ${DEPS}
+          Description: PHP ${V} built for Debian 12 (bookworm) arm64
+          EOF
+
+          dpkg-deb --build --root-owner-group $ROOT /tmp/php-custom_${V}-1_arm64.deb
+          dpkg-deb -I /tmp/php-custom_${V}-1_arm64.deb
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: php-${{ inputs.php_version }}-bookworm-arm64-deb
+          path: /tmp/php-custom_*_arm64.deb
+
+  test:
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    container: debian:bookworm-slim   # 干净环境,不带任何编译依赖
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: php-${{ inputs.php_version }}-bookworm-arm64-deb
+          path: /tmp/deb
+
+      - name: 在干净 Debian 12 中安装并验证
+        run: |
+          cat /etc/debian_version
+          apt-get update
+          apt-get install -y /tmp/deb/php-custom_*_arm64.deb
+          /opt/php-${{ inputs.php_version }}/bin/php -v
+          /opt/php-${{ inputs.php_version }}/bin/php -m
+          /opt/php-${{ inputs.php_version }}/sbin/php-fpm -t || true
