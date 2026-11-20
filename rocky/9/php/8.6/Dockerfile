@@ -13,7 +13,7 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
     --with-curl --with-freetype --with-gettext --with-gmp --with-jpeg --with-openssl --with-pear --with-readline --with-sodium --with-tidy --with-xsl --with-zip --with-zlib \
     --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-pgsql --with-pdo-pgsql \
     --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
-    --enable-shmop --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm
+    --enable-shmop --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-opcache
 RUN cd php-${PHP_VERSION} && make -j4
 RUN cd php-${PHP_VERSION} && make install
 
@@ -54,7 +54,6 @@ RUN sed -i 's/;date.timezone =/date.timezone = PRC/g' ${INSTALL_PATH}/lib/php.in
 RUN sed -i 's/expose_php = On/expose_php = Off/g' ${INSTALL_PATH}/lib/php.ini
 RUN sed -i 's/;pid = run/pid = run/g' ${INSTALL_PATH}/etc/php-fpm.conf
 RUN sed -i "s/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/" ${INSTALL_PATH}/etc/php-fpm.d/www.conf
-RUN echo -e "\n[Opcache] \nzend_extension = opcache.so \nopcache.enable = 1 \nopcache.enable_cli = 1 \n" >> ${INSTALL_PATH}/lib/php.ini
 # Only add an ini entry when the .so actually exists, otherwise php-fpm would fail to start at runtime
 RUN ls ${INSTALL_PATH}/lib/php/extensions/*/redis.so >/dev/null 2>&1 \
     && printf '\n[Redis]\nextension = redis.so\n' >> ${INSTALL_PATH}/lib/php.ini \
@@ -88,5 +87,6 @@ RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 lib
 ENV INSTALL_PATH=/usr/local/php/8.6
 COPY --from=build ${INSTALL_PATH} ${INSTALL_PATH}
 COPY --from=build /composer /usr/local/bin/composer
+COPY --from=build /pie.phar /usr/local/bin/pie
 ENV PATH=${INSTALL_PATH}/bin/:${INSTALL_PATH}/sbin/:$PATH
 CMD [ "php-fpm", "-F" ]
