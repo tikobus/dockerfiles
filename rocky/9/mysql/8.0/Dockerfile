@@ -17,7 +17,7 @@ RUN cd mysql-server-mysql-${MYSQL_VERSION} && mkdir build && cd build \
 RUN cd mysql-server-mysql-${MYSQL_VERSION}/build && make -j4
 RUN cd mysql-server-mysql-${MYSQL_VERSION}/build && make install
 
-FROM ghcr.io/tikobus/rockylinux:9.7.20251123-minimal
+FROM ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal
 RUN microdnf install -y bison ncurses openssl zlib && microdnf clean all
 COPY --from=build /usr/local/mysql /usr/local/mysql
 ENV PATH /usr/local/mysql/bin/:$PATH
