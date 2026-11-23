@@ -19,7 +19,7 @@ RUN cd php-${PHP_VERSION} && make install
 
 # Install extensions with PIE (the official PHP extension installer, replaces PECL)
 # ref: https://github.com/php/pie
-RUN curl -sL https://github.com/php/pie/releases/download/1.5.5/pie.phar -o /pie.phar
+RUN curl -sL https://github.com/php/pie/releases/download/1.5.5/pie.phar -o /pie.phar && chmod +x /pie.phar
 # PIE does not pass -j to make, so parallelize via MAKEFLAGS
 ENV MAKEFLAGS=-j4
 # php.ini is configured manually below, so skip PIE's auto-enable to keep it deterministic.
@@ -79,7 +79,7 @@ RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'compo
   && ${INSTALL_PATH}/bin/php -r "if (hash_file('SHA384', 'composer-setup.php') === rtrim(file_get_contents('https://composer.github.io/installer.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
   && ${INSTALL_PATH}/bin/php composer-setup.php \
   && ${INSTALL_PATH}/bin/php -r "unlink('composer-setup.php');" \
-  && mv composer.phar /composer
+  && mv composer.phar /composer && chmod +x /composer
 
 FROM ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal
 RUN microdnf install -y epel-release && microdnf clean all
