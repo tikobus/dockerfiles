@@ -1,0 +1,38 @@
+name: Docker NoVNC Rocky Amd64
+
+on:
+  workflow_dispatch:
+    inputs:
+      env_name:
+        description: '部署环境'
+        required: true
+        type: choice
+        options:
+          - dev
+          - test
+          - prod
+        default: dev
+      version:
+        description: '版本号'
+        required: true
+        default: '1.7.0'
+
+jobs:
+  build-novnc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the NoVNC Docker image Amd64
+        run: docker build --file rocky/9/novnc/Dockerfile --build-arg BASE_ROCKY_VERSION=${{ vars.BASE_ROCKY_VERSION || '9.8.20260525.0-minimal' }} --build-arg NOVNC_VERSION=${{ inputs.version }} --tag ghcr.io/${{ github.actor }}/novnc:${{ inputs.version }}-rocky .
+
+      - name: Push the NoVNC Docker image Amd64
+        run: docker push ghcr.io/${{ github.actor }}/novnc:${{ inputs.version }}-rocky
