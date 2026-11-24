@@ -1,29 +1,25 @@
 ARG BASE_ROCKY_VERSION=9-minimal
-ARG BASE_ROCKY_BUILD_VERSION=9
-
-FROM rockylinux:${BASE_ROCKY_BUILD_VERSION} AS build
-ENV MYSQL_VERSION 8.4.2
-RUN dnf install -y gcc gcc-c++ make cmake bison diffutils rpcgen perl ncurses-devel openssl-devel zlib-devel libfido2 libedit-devel libevent-devel libicu-devel lz4-devel libcurl-devel perl-interpreter perl-generators libzstd-devel gcc-toolset-12-gcc gcc-toolset-12-gcc-c++ gcc-toolset-12-binutils gcc-toolset-12-annobin-annocheck gcc-toolset-12-annobin-plugin-gcc
-RUN dnf --enablerepo=devel install -y libtirpc-devel libaio-devel mecab-devel protobuf-lite-devel
-RUN curl -O -L https://github.com/mysql/mysql-server/archive/mysql-${MYSQL_VERSION}.tar.gz
-RUN tar zxf mysql-${MYSQL_VERSION}.tar.gz
-RUN cd mysql-server-mysql-${MYSQL_VERSION} && mkdir build && cd build \
-  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
-  -DWITH_BOOST=../boost \
-  -DBUILD_CONFIG=mysql_release \
-  -DINSTALL_LAYOUT=RPM \
-  -DENABLED_LOCAL_INFILE=ON \
-  -DWITH_SYSTEM_LIBS=ON \
-  -DDOWNLOAD_BOOST=1 \
-  -DWITH_FIDO=bundled \
-  ..
-RUN cd mysql-server-mysql-${MYSQL_VERSION}/build && make -j4
-RUN cd mysql-server-mysql-${MYSQL_VERSION}/build && make install
 
 FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
-RUN microdnf install -y bison ncurses openssl zlib && microdnf clean all
-COPY --from=build /usr/local/mysql /usr/local/mysql
-ENV PATH /usr/local/mysql/bin/:$PATH
+
+# MySQL 二进制包版本
+ARG MYSQL_VERSION=8.4.13.1
+ARG MYSQL_GLIBC=glibc2.28
+ARG MYSQL_ARCH=x86_64
+
+# 运行时依赖 + 解压/下载工具
+RUN microdnf install -y tar xz curl bison ncurses openssl zlib libaio \
+ && microdnf clean all
+
+# 直接下载官方 minimal 二进制包并解压到 /usr/local/mysql
+RUN curl -fL -o /tmp/mysql.tar.xz \
+    https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-${MYSQL_VERSION}-linux-${MYSQL_GLIBC}-${MYSQL_ARCH}-minimal.tar.xz \
+ && mkdir -p /usr/local/mysql \
+ && tar -xJf /tmp/mysql.tar.xz -C /usr/local/mysql --strip-components=1 \
+ && rm -f /tmp/mysql.tar.xz
+
+ENV PATH=/usr/local/mysql/bin/:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/mysql/lib/private
 EXPOSE 3306 33060
 VOLUME [/usr/local/mysql/data]
 CMD ["mysqld"]
