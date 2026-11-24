@@ -1,4 +1,7 @@
-FROM rockylinux:9.0.20220720 AS build
+ARG BASE_ROCKY_VERSION=9-minimal
+ARG BASE_ROCKY_BUILD_VERSION=9.0.20220720
+
+FROM rockylinux:${BASE_ROCKY_BUILD_VERSION} AS build
 ENV SEATUNNEL_VERSION 2.3.2
 RUN dnf install -y java-1.8.0-openjdk
 RUN curl -O -L https://dlcdn.apache.org/seatunnel/${SEATUNNEL_VERSION}/apache-seatunnel-${SEATUNNEL_VERSION}-bin.tar.gz
@@ -6,7 +9,7 @@ RUN tar zxf apache-seatunnel-${SEATUNNEL_VERSION}-bin.tar.gz
 RUN ls && cp -r apache-seatunnel-${SEATUNNEL_VERSION} /usr/local/seatunnel
 RUN cd /usr/local/seatunnel/bin && sh install-plugin.sh ${SEATUNNEL_VERSION}
 
-FROM rockylinux:9.0.20220720-minimal
+FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
 RUN microdnf install -y java-1.8.0-openjdk
 COPY --from=build /usr/local/seatunnel /usr/local/seatunnel
 ENV PATH /usr/local/seatunnel/bin/:$PATH

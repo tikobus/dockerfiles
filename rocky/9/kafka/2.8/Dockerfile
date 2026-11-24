@@ -1,11 +1,13 @@
-FROM ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal AS build
+ARG BASE_ROCKY_VERSION=9-minimal
+
+FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION} AS build
 ENV KAFKA_VERSION 2.8.2
 RUN microdnf install -y java-1.8.0-openjdk tar
 RUN curl -O -L https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/kafka_2.13-${KAFKA_VERSION}.tgz
 RUN tar zxf kafka_2.13-${KAFKA_VERSION}.tgz
 RUN cp -r kafka_2.13-${KAFKA_VERSION} /usr/local/kafka
 
-FROM ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal
+FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
 RUN microdnf install -y java-1.8.0-openjdk
 COPY --from=build /usr/local/kafka /usr/local/kafka
 RUN /usr/local/kafka/bin/kafka-storage.sh format -t $(/usr/local/kafka/bin/kafka-storage.sh random-uuid) -c /usr/local/kafka/config/kraft/server.properties

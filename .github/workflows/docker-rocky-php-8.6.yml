@@ -3,6 +3,10 @@ name: Docker PHP 8.6 Rocky Amd64
 on:
   workflow_dispatch:
     inputs:
+      base_rocky_version:
+        description: 'Rocky Linux 基础镜像版本(留空则读取仓库变量 BASE_ROCKY_VERSION,默认 9-minimal)'
+        required: false
+        default: ''
       version:
         description: '版本号'
         required: true
@@ -23,5 +27,5 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the PHP 8 Docker image
-        run: docker build . --file rocky/9/php/8.6/Dockerfile --tag ghcr.io/tikobus/php:${{ inputs.version }}-rocky && docker push ghcr.io/tikobus/php:${{ inputs.version }}-rocky
+        run: docker build . --file rocky/9/php/8.6/Dockerfile --build-arg BASE_ROCKY_VERSION=${{ inputs.base_rocky_version || vars.BASE_ROCKY_VERSION || '9-minimal' }} --tag ghcr.io/tikobus/php:${{ inputs.version }}-rocky && docker push ghcr.io/tikobus/php:${{ inputs.version }}-rocky
 

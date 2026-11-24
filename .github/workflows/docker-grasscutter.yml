@@ -3,6 +3,10 @@ name: Docker Grasscutter
 on:
   workflow_dispatch:
     inputs:
+      base_rocky_version:
+        description: 'Rocky Linux 基础镜像版本(留空则读取仓库变量 BASE_ROCKY_VERSION,默认 9-minimal)'
+        required: false
+        default: ''
       version:
         description: '版本号'
         required: true
@@ -23,4 +27,4 @@ jobs:
          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the Grasscutter Docker image
-        run: cd rocky/9/grasscutter/4.0 && docker build . --file Dockerfile --tag ghcr.io/tikobus/grasscutter:${{ inputs.version }} && docker push ghcr.io/tikobus/grasscutter:${{ inputs.version }}
+        run: cd rocky/9/grasscutter/4.0 && docker build . --file Dockerfile --build-arg BASE_ROCKY_VERSION=${{ inputs.base_rocky_version || vars.BASE_ROCKY_VERSION || '9-minimal' }} --tag ghcr.io/tikobus/grasscutter:${{ inputs.version }} && docker push ghcr.io/tikobus/grasscutter:${{ inputs.version }}

@@ -1,4 +1,7 @@
-FROM rockylinux:9 AS build
+ARG BASE_ROCKY_VERSION=9-minimal
+ARG BASE_ROCKY_BUILD_VERSION=9
+
+FROM rockylinux:${BASE_ROCKY_BUILD_VERSION} AS build
 ENV MYSQL_VERSION 8.4.2
 RUN dnf install -y gcc gcc-c++ make cmake bison diffutils rpcgen perl ncurses-devel openssl-devel zlib-devel libfido2 libedit-devel libevent-devel libicu-devel lz4-devel libcurl-devel perl-interpreter perl-generators libzstd-devel gcc-toolset-12-gcc gcc-toolset-12-gcc-c++ gcc-toolset-12-binutils gcc-toolset-12-annobin-annocheck gcc-toolset-12-annobin-plugin-gcc
 RUN dnf --enablerepo=devel install -y libtirpc-devel libaio-devel mecab-devel protobuf-lite-devel
@@ -17,7 +20,7 @@ RUN cd mysql-server-mysql-${MYSQL_VERSION} && mkdir build && cd build \
 RUN cd mysql-server-mysql-${MYSQL_VERSION}/build && make -j4
 RUN cd mysql-server-mysql-${MYSQL_VERSION}/build && make install
 
-FROM ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal
+FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
 RUN microdnf install -y bison ncurses openssl zlib && microdnf clean all
 COPY --from=build /usr/local/mysql /usr/local/mysql
 ENV PATH /usr/local/mysql/bin/:$PATH

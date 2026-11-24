@@ -1,4 +1,4 @@
-ARG BASE_ROCKY_VERSION=9.8.20260525.0-minimal
+ARG BASE_ROCKY_VERSION=9-minimal
 
 FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
 

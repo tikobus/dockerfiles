@@ -1,4 +1,4 @@
-ARG BASE_ROCKY_VERSION=9.8.20260525.0-minimal
+ARG BASE_ROCKY_VERSION=9-minimal
 ARG NGINX_VERSION=1.30.5
 
 FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION} AS build
@@ -21,8 +21,6 @@ RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
   --add-module=../nginx-acme-${ACME_VERSION} \
   && make -j4 \
   && make install
-
-ARG BASE_ROCKY_VERSION=9.8.20260525.0-minimal
 
 FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
 RUN microdnf install -y zlib openssl pcre libxslt && microdnf clean all

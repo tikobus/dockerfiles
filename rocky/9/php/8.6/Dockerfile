@@ -1,4 +1,6 @@
-FROM ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal AS build
+ARG BASE_ROCKY_VERSION=9-minimal
+
+FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION} AS build
 ENV PHP_VERSION=8.6.0
 ENV INSTALL_PATH=/usr/local/php/8.6
 RUN microdnf install -y epel-release
@@ -81,7 +83,7 @@ RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'compo
   && ${INSTALL_PATH}/bin/php -r "unlink('composer-setup.php');" \
   && mv composer.phar /composer && chmod +x /composer
 
-FROM ghcr.io/tikobus/rockylinux:9.8.20260525.0-minimal
+FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 libxslt libpng libjpeg libicu librdkafka libpq libsodium libtidy libzip oniguruma openssl readline zlib && microdnf clean all
 ENV INSTALL_PATH=/usr/local/php/8.6

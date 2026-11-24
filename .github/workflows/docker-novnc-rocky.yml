@@ -3,6 +3,10 @@ name: Docker NoVNC Rocky Amd64
 on:
   workflow_dispatch:
     inputs:
+      base_rocky_version:
+        description: 'Rocky Linux 基础镜像版本(留空则读取仓库变量 BASE_ROCKY_VERSION,默认 9-minimal)'
+        required: false
+        default: ''
       env_name:
         description: '部署环境'
         required: true
@@ -32,7 +36,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the NoVNC Docker image Amd64
-        run: docker build --file rocky/9/novnc/Dockerfile --build-arg BASE_ROCKY_VERSION=${{ vars.BASE_ROCKY_VERSION || '9.8.20260525.0-minimal' }} --build-arg NOVNC_VERSION=${{ inputs.version }} --tag ghcr.io/${{ github.actor }}/novnc:${{ inputs.version }}-rocky .
+        run: docker build --file rocky/9/novnc/Dockerfile --build-arg BASE_ROCKY_VERSION=${{ inputs.base_rocky_version || vars.BASE_ROCKY_VERSION || '9-minimal' }} --build-arg NOVNC_VERSION=${{ inputs.version }} --tag ghcr.io/${{ github.actor }}/novnc:${{ inputs.version }}-rocky .
 
       - name: Push the NoVNC Docker image Amd64
         run: docker push ghcr.io/${{ github.actor }}/novnc:${{ inputs.version }}-rocky
