@@ -1,48 +1,53 @@
 ARG BASE_ROCKY_VERSION=9-minimal
 
-FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
+# ---------------------------------------------------------------------------
+# build 阶段:下载并裁剪官方 minimal 二进制包
+# ---------------------------------------------------------------------------
+FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION} AS build
 
-# MySQL 二进制包版本
 ARG MYSQL_VERSION=8.4.13.1
 ARG MYSQL_GLIBC=glibc2.28
 ARG MYSQL_ARCH=x86_64
 
-ENV MYSQL_HOME=/usr/local/mysql
-ENV MYSQL_DATA=/usr/local/mysql/data
+RUN microdnf install -y --setopt=install_weak_deps=0 --setopt=tsflags=nodocs \
+      tar xz curl shadow-utils \
+ && microdnf clean all \
+ && rm -rf /var/cache/dnf /var/lib/dnf
 
-# 运行时依赖 + 解压/下载工具
-RUN microdnf install -y tar xz curl bison ncurses openssl zlib libaio numactl-libs shadow-utils \
- && microdnf clean all
-
-# 直接下载官方 minimal 二进制包并解压到 /usr/local/mysql
 RUN curl -fL -o /tmp/mysql.tar.xz \
-    https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-${MYSQL_VERSION}-linux-${MYSQL_GLIBC}-${MYSQL_ARCH}-minimal.tar.xz \
- && mkdir -p /usr/local/mysql \
- && tar -xJf /tmp/mysql.tar.xz -C /usr/local/mysql --strip-components=1 \
+      https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-${MYSQL_VERSION}-linux-${MYSQL_GLIBC}-${MYSQL_ARCH}-minimal.tar.xz \
+ && mkdir -p /opt/mysql \
+ && tar -xJf /tmp/mysql.tar.xz -C /opt/mysql --strip-components=1 \
  && rm -f /tmp/mysql.tar.xz
 
-# 运行用户与目录(mysqld 不允许以 root 身份运行)
-RUN groupadd -r mysql \
- && useradd -r -g mysql -d /usr/local/mysql/data -s /sbin/nologin mysql \
- && mkdir -p /usr/local/mysql/data /var/run/mysqld \
- && chown -R mysql:mysql /usr/local/mysql /var/run/mysqld \
- && chmod 750 /usr/local/mysql /usr/local/mysql/data \
- && chmod 755 /var/run/mysqld
+# 删除运行时不需要的内容(debug 二进制、头文件、静态库、文档、多语言错误信息等)
+RUN cd /opt/mysql \
+ && rm -rf include support-files man docs share/man \
+ && rm -rf lib/*.a lib/private/*.a lib/debug lib/plugin/*.a \
+ && rm -rf bin/*-debug bin/*debug* bin/mysqltest* bin/mysql-test* bin/mysql_config \
+ && if [ -d share/english ]; then \
+      find share -mindepth 1 -maxdepth 1 -type d ! -name english -prune -exec rm -rf {} +; \
+    fi \
+ && find . -depth -type d -empty -delete
 
-# 基础配置(容器内无法设置 NUMA 内存策略,关闭 innodb_numa_interleave 避免告警)
-RUN printf '%s\n' \
-    '[mysqld]' \
-    'basedir=/usr/local/mysql' \
-    'datadir=/usr/local/mysql/data' \
-    'socket=/var/run/mysqld/mysqld.sock' \
-    'pid-file=/var/run/mysqld/mysqld.pid' \
-    'innodb_numa_interleave=OFF' \
-    '[client]' \
-    'socket=/var/run/mysqld/mysqld.sock' \
-    > /etc/my.cnf
+# 运行用户(uid/gid 与 RHEL 系 mysql 用户保持一致)、目录与配置文件
+RUN groupadd -r -g 27 mysql \
+ && useradd -r -u 27 -g 27 -d /usr/local/mysql/data -s /sbin/nologin mysql \
+ && mkdir -p /opt/mysql/data \
+ && chown -R 27:27 /opt/mysql \
+ && chmod 750 /opt/mysql /opt/mysql/data \
+ && printf '%s\n' \
+      '[mysqld]' \
+      'basedir=/usr/local/mysql' \
+      'datadir=/usr/local/mysql/data' \
+      'socket=/var/run/mysqld/mysqld.sock' \
+      'pid-file=/var/run/mysqld/mysqld.pid' \
+      'innodb_numa_interleave=OFF' \
+      '[client]' \
+      'socket=/var/run/mysqld/mysqld.sock' \
+      > /opt/my.cnf
 
-# 入口脚本:修正目录权限,首次启动自动初始化数据目录,并以 mysql 用户启动
-COPY <<'EOF' /usr/local/bin/docker-entrypoint.sh
+COPY <<'EOF' /opt/docker-entrypoint.sh
 #!/bin/sh
 set -e
 
@@ -74,7 +79,30 @@ fi
 exec "$@"
 EOF
 
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /opt/docker-entrypoint.sh
+
+# ---------------------------------------------------------------------------
+# 最终镜像:只安装运行时库,拷贝裁剪后的 MySQL
+# ---------------------------------------------------------------------------
+FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
+
+ENV MYSQL_HOME=/usr/local/mysql
+ENV MYSQL_DATA=/usr/local/mysql/data
+
+# 仅保留运行时依赖,装完立刻清理缓存与日志
+RUN microdnf install -y --setopt=install_weak_deps=0 --setopt=tsflags=nodocs \
+      libaio numactl-libs ncurses-libs libstdc++ zlib openssl-libs \
+ && microdnf clean all \
+ && rm -rf /var/cache/dnf /var/lib/dnf /var/log/dnf* /tmp/* \
+ && mkdir -p /var/run/mysqld \
+ && chown 27:27 /var/run/mysqld \
+ && chmod 755 /var/run/mysqld
+
+# 复用 build 阶段创建的用户/配置文件,避免为此安装 shadow-utils
+COPY --from=build /etc/passwd /etc/group /etc/
+COPY --from=build --chown=27:27 /opt/mysql /usr/local/mysql
+COPY --from=build /opt/my.cnf /etc/my.cnf
+COPY --from=build /opt/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 ENV PATH=/usr/local/mysql/bin/:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/mysql/lib/private
