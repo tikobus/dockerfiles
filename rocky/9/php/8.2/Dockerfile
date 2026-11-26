@@ -1,7 +1,7 @@
 ARG BASE_ROCKY_VERSION=9-minimal
 
 FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION} AS build
-ENV PHP_VERSION 8.2.36
+ENV PHP_VERSION=8.2.36
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ libicu-devel libjpeg-devel libpng-devel librdkafka-devel libtool libwebp-devel libxml2-devel libzip-devel make oniguruma-devel openssl-devel pkgconf-pkg-config readline-devel sqlite-devel tar unzip zlib-devel 
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=epel install -y libsodium-devel
@@ -95,5 +95,5 @@ RUN microdnf --enablerepo=epel install -y curl freetype libevent libxml2 libpng 
 COPY --from=build /usr/local/php /usr/local/php
 COPY --from=build /composer /usr/local/bin/composer
 COPY --from=build /pie.phar /usr/local/bin/pie
-ENV PATH /usr/local/php/bin/:/usr/local/php/sbin/:$PATH
+ENV PATH=/usr/local/php/bin/:/usr/local/php/sbin/:$PATH
 CMD [ "php-fpm", "-F" ]

@@ -1,8 +1,8 @@
 ARG BASE_ROCKY_VERSION=9-minimal
 
 FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION} AS build
-ENV PHP_VERSION 8.5.13
-ENV INSTALL_PATH /usr/local/php/8.5
+ENV PHP_VERSION=8.5.13
+ENV INSTALL_PATH=/usr/local/php/8.5
 RUN microdnf install -y epel-release
 RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libtool libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel pkgconf-pkg-config readline-devel sqlite-devel tar unzip zlib-devel
 RUN microdnf --enablerepo=epel install -y libsodium-devel libtidy-devel
@@ -92,9 +92,9 @@ RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'compo
 FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION}
 RUN microdnf install -y epel-release && microdnf clean all
 RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 libxslt libpng libjpeg libicu librdkafka libpq libsodium libtidy libzip oniguruma openssl readline zlib && microdnf clean all
-ENV INSTALL_PATH /usr/local/php/8.5
+ENV INSTALL_PATH=/usr/local/php/8.5
 COPY --from=build ${INSTALL_PATH} ${INSTALL_PATH}
 COPY --from=build /composer /usr/local/bin/composer
 COPY --from=build /pie.phar /usr/local/bin/pie
-ENV PATH ${INSTALL_PATH}/bin/:${INSTALL_PATH}/sbin/:$PATH
+ENV PATH=${INSTALL_PATH}/bin/:${INSTALL_PATH}/sbin/:$PATH
 CMD [ "php-fpm", "-F" ]
