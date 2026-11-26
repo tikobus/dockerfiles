@@ -35,18 +35,18 @@ RUN /usr/local/php/bin/php /pie.phar install --with-php-config=/usr/local/php/bi
     || echo "::warning::apcu/apcu:5.1.24 build failed, skipped"
 RUN /usr/local/php/bin/php /pie.phar install --with-php-config=/usr/local/php/bin/php-config --skip-enable-extension rdkafka/rdkafka:6.0.5 \
     || echo "::warning::rdkafka/rdkafka:6.0.5 build failed, skipped"
-RUN /usr/local/php/bin/php /pie.phar install --with-php-config=/usr/local/php/bin/php-config --skip-enable-extension grpc/grpc-php-ext:1.78.2 \
-    || echo "::warning::grpc/grpc-php-ext:1.78.2 build failed, skipped"
+# RUN /usr/local/php/bin/php /pie.phar install --with-php-config=/usr/local/php/bin/php-config --skip-enable-extension grpc/grpc-php-ext:1.78.2 \
+#     || echo "::warning::grpc/grpc-php-ext:1.78.2 build failed, skipped"
 
 # protobuf has no official PIE package yet (only third-party mirrors like extport/protobuf),
 # so keep building it from the official PECL source for now
-RUN export VERSION=3.18.3 \
-    && curl -O https://pecl.php.net/get/protobuf-${VERSION}.tgz \
-    && tar zxf protobuf-${VERSION}.tgz \
-    && cd protobuf-${VERSION} \
-    && /usr/local/php/bin/phpize \
-    && ./configure --with-php-config=/usr/local/php/bin/php-config && make -j4 && make install \
-    || echo "::warning::protobuf build failed, skipped"
+# RUN export VERSION=3.18.3 \
+#     && curl -O https://pecl.php.net/get/protobuf-${VERSION}.tgz \
+#     && tar zxf protobuf-${VERSION}.tgz \
+#     && cd protobuf-${VERSION} \
+#     && /usr/local/php/bin/phpize \
+#     && ./configure --with-php-config=/usr/local/php/bin/php-config && make -j4 && make install \
+#     || echo "::warning::protobuf build failed, skipped"
 
 RUN cd /usr/local/php && strip bin/php && strip bin/php-cgi && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
 RUN strip /usr/local/php/lib/php/extensions/no-debug-non-zts-*/*.so
@@ -72,15 +72,15 @@ RUN ls /usr/local/php/lib/php/extensions/*/event.so >/dev/null 2>&1 \
 RUN ls /usr/local/php/lib/php/extensions/*/apcu.so >/dev/null 2>&1 \
     && printf '\n[Apcu]\n;extension = apcu.so\n' >> /usr/local/php/lib/php.ini \
     || echo "::warning::apcu.so not built, ini entry skipped"
-RUN ls /usr/local/php/lib/php/extensions/*/protobuf.so >/dev/null 2>&1 \
-    && printf '\n[Protobuf]\n;extension = protobuf.so\n' >> /usr/local/php/lib/php.ini \
-    || echo "::warning::protobuf.so not built, ini entry skipped"
+# RUN ls /usr/local/php/lib/php/extensions/*/protobuf.so >/dev/null 2>&1 \
+#     && printf '\n[Protobuf]\n;extension = protobuf.so\n' >> /usr/local/php/lib/php.ini \
+#     || echo "::warning::protobuf.so not built, ini entry skipped"
 RUN ls /usr/local/php/lib/php/extensions/*/rdkafka.so >/dev/null 2>&1 \
     && printf '\n[Rdkafka]\n;extension = rdkafka.so\n' >> /usr/local/php/lib/php.ini \
     || echo "::warning::rdkafka.so not built, ini entry skipped"
-RUN ls /usr/local/php/lib/php/extensions/*/grpc.so >/dev/null 2>&1 \
-    && printf '\n[Grpc]\n;extension = grpc.so\n' >> /usr/local/php/lib/php.ini \
-    || echo "::warning::grpc.so not built, ini entry skipped"
+# RUN ls /usr/local/php/lib/php/extensions/*/grpc.so >/dev/null 2>&1 \
+#     && printf '\n[Grpc]\n;extension = grpc.so\n' >> /usr/local/php/lib/php.ini \
+#     || echo "::warning::grpc.so not built, ini entry skipped"
 
 # Install Composer
 RUN /usr/local/php/bin/php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
