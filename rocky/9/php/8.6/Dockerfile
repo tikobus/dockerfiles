@@ -4,7 +4,7 @@ FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION} AS build
 ENV PHP_VERSION=8.6.0
 ENV INSTALL_PATH=/usr/local/php/8.6
 RUN microdnf install -y epel-release
-RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libtool libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar unzip zlib-devel
+RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libtool libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel pkgconf-pkg-config readline-devel sqlite-devel tar unzip zlib-devel
 RUN microdnf --enablerepo=epel install -y libsodium-devel libtidy-devel
 
 RUN curl -O https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz
@@ -15,7 +15,7 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
     --with-curl --with-freetype --with-gettext --with-gmp --with-jpeg --with-openssl --with-pear --with-readline --with-sodium --with-tidy --with-xsl --with-zip --with-zlib \
     --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-pgsql --with-pdo-pgsql \
     --enable-bcmath --enable-calendar --enable-exif --enable-embed --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbstring --enable-mysqlnd --enable-pcntl \
-    --enable-shmop --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-opcache
+    --enable-shmop --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm
 RUN cd php-${PHP_VERSION} && make -j4
 RUN cd php-${PHP_VERSION} && make install
 
@@ -25,18 +25,18 @@ RUN curl -sL https://github.com/php/pie/releases/download/1.5.5/pie.phar -o /pie
 # PIE does not pass -j to make, so parallelize via MAKEFLAGS
 ENV MAKEFLAGS=-j4
 # php.ini is configured manually below, so skip PIE's auto-enable to keep it deterministic.
-# Each extension is best-effort: on failure dump PIE's saved make log and keep going,
-# so one extension not yet compatible with this PHP version won't kill the whole build.
+# Each extension is best-effort: a failed build only emits a CI warning and the build
+# continues, so one extension not yet compatible with this PHP version cannot break the image.
 RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension phpredis/phpredis:6.3.0 \
-    || (ls -t /tmp/pie_make_output_* 2>/dev/null | head -1 | xargs -r tail -60; echo "::warning::phpredis/phpredis:6.3.0 build failed, skipped")
+    || echo "::warning::phpredis/phpredis:6.3.0 build failed, skipped"
 RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension osmanov/pecl-event:3.2.0 \
-    || (ls -t /tmp/pie_make_output_* 2>/dev/null | head -1 | xargs -r tail -60; echo "::warning::osmanov/pecl-event:3.2.0 build failed, skipped")
+    || echo "::warning::osmanov/pecl-event:3.2.0 build failed, skipped"
 RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension apcu/apcu:5.1.28 \
-    || (ls -t /tmp/pie_make_output_* 2>/dev/null | head -1 | xargs -r tail -60; echo "::warning::apcu/apcu:5.1.28 build failed, skipped")
+    || echo "::warning::apcu/apcu:5.1.28 build failed, skipped"
 RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension rdkafka/rdkafka:6.0.5 \
-    || (ls -t /tmp/pie_make_output_* 2>/dev/null | head -1 | xargs -r tail -60; echo "::warning::rdkafka/rdkafka:6.0.5 build failed, skipped")
+    || echo "::warning::rdkafka/rdkafka:6.0.5 build failed, skipped"
 RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension grpc/grpc-php-ext:1.85.3 \
-    || (ls -t /tmp/pie_make_output_* 2>/dev/null | head -1 | xargs -r tail -60; echo "::warning::grpc/grpc-php-ext:1.85.3 build failed, skipped")
+    || echo "::warning::grpc/grpc-php-ext:1.85.3 build failed, skipped"
 
 # protobuf has no official PIE package yet (only third-party mirrors like extport/protobuf),
 # so keep building it from the official PECL source for now
@@ -56,24 +56,30 @@ RUN sed -i 's/;date.timezone =/date.timezone = PRC/g' ${INSTALL_PATH}/lib/php.in
 RUN sed -i 's/expose_php = On/expose_php = Off/g' ${INSTALL_PATH}/lib/php.ini
 RUN sed -i 's/;pid = run/pid = run/g' ${INSTALL_PATH}/etc/php-fpm.conf
 RUN sed -i "s/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/" ${INSTALL_PATH}/etc/php-fpm.d/www.conf
-# Only add an ini entry when the .so actually exists, otherwise php-fpm would fail to start at runtime
+# All extensions are installed but disabled by default: only commented-out
+# entries are appended to php.ini. Uncomment the "extension = ..." line to
+# enable an extension. An entry is only added when the .so actually exists,
+# so php.ini stays clean when an extension build is skipped.
+RUN ls ${INSTALL_PATH}/lib/php/extensions/*/opcache.so >/dev/null 2>&1 \
+    && printf '\n[Opcache]\n;zend_extension = opcache.so\n;opcache.enable = 1\n;opcache.enable_cli = 1\n' >> ${INSTALL_PATH}/lib/php.ini \
+    || echo "::warning::opcache.so not built, ini entry skipped"
 RUN ls ${INSTALL_PATH}/lib/php/extensions/*/redis.so >/dev/null 2>&1 \
-    && printf '\n[Redis]\nextension = redis.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    && printf '\n[Redis]\n;extension = redis.so\n' >> ${INSTALL_PATH}/lib/php.ini \
     || echo "::warning::redis.so not built, ini entry skipped"
 RUN ls ${INSTALL_PATH}/lib/php/extensions/*/event.so >/dev/null 2>&1 \
-    && printf '\n[Event]\nextension = event.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    && printf '\n[Event]\n;extension = event.so\n' >> ${INSTALL_PATH}/lib/php.ini \
     || echo "::warning::event.so not built, ini entry skipped"
 RUN ls ${INSTALL_PATH}/lib/php/extensions/*/apcu.so >/dev/null 2>&1 \
-    && printf '\n[Apcu]\nextension = apcu.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    && printf '\n[Apcu]\n;extension = apcu.so\n' >> ${INSTALL_PATH}/lib/php.ini \
     || echo "::warning::apcu.so not built, ini entry skipped"
 RUN ls ${INSTALL_PATH}/lib/php/extensions/*/protobuf.so >/dev/null 2>&1 \
-    && printf '\n[Protobuf]\nextension = protobuf.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    && printf '\n[Protobuf]\n;extension = protobuf.so\n' >> ${INSTALL_PATH}/lib/php.ini \
     || echo "::warning::protobuf.so not built, ini entry skipped"
 RUN ls ${INSTALL_PATH}/lib/php/extensions/*/rdkafka.so >/dev/null 2>&1 \
-    && printf '\n[Rdkafka]\nextension = rdkafka.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    && printf '\n[Rdkafka]\n;extension = rdkafka.so\n' >> ${INSTALL_PATH}/lib/php.ini \
     || echo "::warning::rdkafka.so not built, ini entry skipped"
 RUN ls ${INSTALL_PATH}/lib/php/extensions/*/grpc.so >/dev/null 2>&1 \
-    && printf '\n[Grpc]\nextension = grpc.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    && printf '\n[Grpc]\n;extension = grpc.so\n' >> ${INSTALL_PATH}/lib/php.ini \
     || echo "::warning::grpc.so not built, ini entry skipped"
 
 # Install Composer

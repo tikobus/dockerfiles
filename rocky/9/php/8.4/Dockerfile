@@ -1,10 +1,10 @@
 ARG BASE_ROCKY_VERSION=9-minimal
 
 FROM ghcr.io/tikobus/rockylinux:${BASE_ROCKY_VERSION} AS build
-ENV PHP_VERSION 8.4.27
+ENV PHP_VERSION 8.4.28
 ENV INSTALL_PATH /usr/local/php/8.4
 RUN microdnf install -y epel-release
-RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel readline-devel sqlite-devel tar zlib-devel
+RUN microdnf --enablerepo=devel install -y autoconf automake curl-devel freetype-devel gcc gcc-c++ gmp-devel libevent-devel libicu-devel libjpeg-devel libpng-devel libpq-devel librdkafka-devel libtool libwebp-devel libxml2-devel libxslt-devel libzip-devel make oniguruma-devel openssl-devel pkgconf-pkg-config readline-devel sqlite-devel tar unzip zlib-devel
 RUN microdnf --enablerepo=epel install -y libsodium-devel libtidy-devel
 
 RUN curl -O https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz
@@ -19,47 +19,34 @@ RUN export PKG_CONFIG_PATH=PKG_CONFIG_PATH:"/usr/local/lib/pkgconfig/" \
 RUN cd php-${PHP_VERSION} && make -j4
 RUN cd php-${PHP_VERSION} && make install
 
-RUN export VERSION=6.1.0 \
-    && curl -O https://pecl.php.net/get/redis-${VERSION}.tgz \
-    && tar zxf redis-${VERSION}.tgz \
-    && cd redis-${VERSION} \
-    && ${INSTALL_PATH}/bin/phpize \
-    && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
+# Install extensions with PIE (the official PHP extension installer, replaces PECL)
+# ref: https://github.com/php/pie
+RUN curl -sL https://github.com/php/pie/releases/download/1.5.5/pie.phar -o /pie.phar && chmod +x /pie.phar
+# PIE does not pass -j to make, so parallelize via MAKEFLAGS
+ENV MAKEFLAGS=-j4
+# php.ini is configured manually below, so skip PIE's auto-enable to keep it deterministic.
+# Each extension is best-effort: a failed build only emits a CI warning and the build
+# continues, so one extension not yet compatible with this PHP version cannot break the image.
+RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension phpredis/phpredis:6.1.0 \
+    || echo "::warning::phpredis/phpredis:6.1.0 build failed, skipped"
+RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension osmanov/pecl-event:3.1.5 \
+    || echo "::warning::osmanov/pecl-event:3.1.5 build failed, skipped"
+RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension apcu/apcu:5.1.24 \
+    || echo "::warning::apcu/apcu:5.1.24 build failed, skipped"
+RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension rdkafka/rdkafka:6.0.5 \
+    || echo "::warning::rdkafka/rdkafka:6.0.5 build failed, skipped"
+RUN ${INSTALL_PATH}/bin/php /pie.phar install --with-php-config=${INSTALL_PATH}/bin/php-config --skip-enable-extension grpc/grpc-php-ext:1.78.2 \
+    || echo "::warning::grpc/grpc-php-ext:1.78.2 build failed, skipped"
 
-RUN export VERSION=3.0.8 \
-    && curl -O https://pecl.php.net/get/event-${VERSION}.tgz \
-    && tar zxf event-${VERSION}.tgz \
-    && cd event-${VERSION} \
-    && ${INSTALL_PATH}/bin/phpize \
-    && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
-
-RUN export VERSION=5.1.24 \
-    && curl -O https://pecl.php.net/get/apcu-${VERSION}.tgz \
-    && tar zxf apcu-${VERSION}.tgz \
-    && cd apcu-${VERSION} \
-    && ${INSTALL_PATH}/bin/phpize \
-    && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
-
+# protobuf has no official PIE package yet (only third-party mirrors like extport/protobuf),
+# so keep building it from the official PECL source for now
 RUN export VERSION=3.18.3 \
     && curl -O https://pecl.php.net/get/protobuf-${VERSION}.tgz \
     && tar zxf protobuf-${VERSION}.tgz \
     && cd protobuf-${VERSION} \
     && ${INSTALL_PATH}/bin/phpize \
-    && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
-
-RUN export VERSION=6.0.3 \
-    && curl -O https://pecl.php.net/get/rdkafka-${VERSION}.tgz \
-    && tar zxf rdkafka-${VERSION}.tgz \
-    && cd rdkafka-${VERSION} \
-    && ${INSTALL_PATH}/bin/phpize \
-    && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
-
-RUN export VERSION=1.48.1 \
-    && curl -O https://pecl.php.net/get/grpc-${VERSION}.tgz \
-    && tar zxf grpc-${VERSION}.tgz \
-    && cd grpc-${VERSION} \
-    && ${INSTALL_PATH}/bin/phpize \
-    && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install
+    && ./configure --with-php-config=${INSTALL_PATH}/bin/php-config && make -j4 && make install \
+    || echo "::warning::protobuf build failed, skipped"
 
 RUN cd ${INSTALL_PATH} && strip bin/php && strip bin/php-cgi && strip bin/phpdbg && strip sbin/php-fpm && strip lib/libphp.so
 RUN strip ${INSTALL_PATH}/lib/php/extensions/no-debug-non-zts-*/*.so
@@ -69,13 +56,31 @@ RUN sed -i 's/;date.timezone =/date.timezone = PRC/g' ${INSTALL_PATH}/lib/php.in
 RUN sed -i 's/expose_php = On/expose_php = Off/g' ${INSTALL_PATH}/lib/php.ini
 RUN sed -i 's/;pid = run/pid = run/g' ${INSTALL_PATH}/etc/php-fpm.conf
 RUN sed -i "s/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/" ${INSTALL_PATH}/etc/php-fpm.d/www.conf
-RUN echo -e "\n[Opcache] \nzend_extension = opcache.so \nopcache.enable = 1 \nopcache.enable_cli = 1 \n" >> ${INSTALL_PATH}/lib/php.ini
-RUN echo -e "\n[Redis]\nextension = redis.so\n" >> ${INSTALL_PATH}/lib/php.ini
-RUN echo -e "\n[Event]\nextension = event.so\n" >> ${INSTALL_PATH}/lib/php.ini
-RUN echo -e "\n[Apcu]\nextension = apcu.so\n" >> ${INSTALL_PATH}/lib/php.ini
-RUN echo -e "\n[Protobuf]\nextension = protobuf.so\n" >> ${INSTALL_PATH}/lib/php.ini
-RUN echo -e "\n[Rdkafka]\nextension = rdkafka.so\n" >> ${INSTALL_PATH}/lib/php.ini
-RUN echo -e "\n[Grpc]\nextension = grpc.so\n" >> ${INSTALL_PATH}/lib/php.ini
+# All extensions are installed but disabled by default: only commented-out
+# entries are appended to php.ini. Uncomment the "extension = ..." line to
+# enable an extension. An entry is only added when the .so actually exists,
+# so php.ini stays clean when an extension build is skipped.
+RUN ls ${INSTALL_PATH}/lib/php/extensions/*/opcache.so >/dev/null 2>&1 \
+    && printf '\n[Opcache]\n;zend_extension = opcache.so\n;opcache.enable = 1\n;opcache.enable_cli = 1\n' >> ${INSTALL_PATH}/lib/php.ini \
+    || echo "::warning::opcache.so not built, ini entry skipped"
+RUN ls ${INSTALL_PATH}/lib/php/extensions/*/redis.so >/dev/null 2>&1 \
+    && printf '\n[Redis]\n;extension = redis.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    || echo "::warning::redis.so not built, ini entry skipped"
+RUN ls ${INSTALL_PATH}/lib/php/extensions/*/event.so >/dev/null 2>&1 \
+    && printf '\n[Event]\n;extension = event.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    || echo "::warning::event.so not built, ini entry skipped"
+RUN ls ${INSTALL_PATH}/lib/php/extensions/*/apcu.so >/dev/null 2>&1 \
+    && printf '\n[Apcu]\n;extension = apcu.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    || echo "::warning::apcu.so not built, ini entry skipped"
+RUN ls ${INSTALL_PATH}/lib/php/extensions/*/protobuf.so >/dev/null 2>&1 \
+    && printf '\n[Protobuf]\n;extension = protobuf.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    || echo "::warning::protobuf.so not built, ini entry skipped"
+RUN ls ${INSTALL_PATH}/lib/php/extensions/*/rdkafka.so >/dev/null 2>&1 \
+    && printf '\n[Rdkafka]\n;extension = rdkafka.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    || echo "::warning::rdkafka.so not built, ini entry skipped"
+RUN ls ${INSTALL_PATH}/lib/php/extensions/*/grpc.so >/dev/null 2>&1 \
+    && printf '\n[Grpc]\n;extension = grpc.so\n' >> ${INSTALL_PATH}/lib/php.ini \
+    || echo "::warning::grpc.so not built, ini entry skipped"
 
 # Install Composer
 RUN ${INSTALL_PATH}/bin/php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
@@ -90,5 +95,6 @@ RUN microdnf --enablerepo=epel install -y curl freetype gmp libevent libxml2 lib
 ENV INSTALL_PATH /usr/local/php/8.4
 COPY --from=build ${INSTALL_PATH} ${INSTALL_PATH}
 COPY --from=build /composer /usr/local/bin/composer
+COPY --from=build /pie.phar /usr/local/bin/pie
 ENV PATH ${INSTALL_PATH}/bin/:${INSTALL_PATH}/sbin/:$PATH
 CMD [ "php-fpm", "-F" ]
